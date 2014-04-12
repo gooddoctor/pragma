@@ -11,14 +11,14 @@ MAKEFILE      = Makefile
 ####### Compiler, tools and options
 
 CC            = gcc
-CXX           = g++
-DEFINES       = -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB
+CXX           = clang++
+DEFINES       = -DQT_NO_DEBUG -DQT_XML_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-INCPATH       = -I../../../tools/qt/5.2.1/gcc_64/mkspecs/linux-g++ -I. -I. -I../lib/zlib-1.2.8/include -I../lib/base64 -I../../../tools/qt/5.2.1/gcc_64/include -I../../../tools/qt/5.2.1/gcc_64/include/QtGui -I../../../tools/qt/5.2.1/gcc_64/include/QtCore -I.
-LINK          = g++
+CXXFLAGS      = -pipe -std=c++11 -D_REENTRANT -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
+INCPATH       = -I../../../tools/qt/5.2.1/gcc_64/mkspecs/linux-g++ -I. -I. -I../lib/zlib-1.2.8/include -I../lib/base64 -I../../../tools/qt/5.2.1/gcc_64/include -I../../../tools/qt/5.2.1/gcc_64/include/QtXml -I../../../tools/qt/5.2.1/gcc_64/include/QtGui -I../../../tools/qt/5.2.1/gcc_64/include/QtCore -I.
+LINK          = clang++
 LFLAGS        = -Wl,-O1 -Wl,-rpath,/home/gooddocteur/tools/qt/5.2.1/gcc_64 -Wl,-rpath,/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib
-LIBS          = $(SUBLIBS) -L../lib/zlib-1.2.8/lib -L../lib/base64 -lz -lbase64 -L/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L../lib/zlib-1.2.8/lib -L../lib/base64 -L/usr/include/SDL2 -lz -lbase64 -lSDL2 -lSDL2_image -L/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib -lQt5Xml -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 QMAKE         = /home/gooddocteur/bin/qmake
@@ -45,8 +45,10 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = main.cpp 
-OBJECTS       = main.o
+SOURCES       = parser/tmx_parser.cpp \
+		main.cpp 
+OBJECTS       = tmx_parser.o \
+		main.o
 DIST          = ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/common/shell-unix.conf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/common/unix.conf \
@@ -135,6 +137,7 @@ DIST          = ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_post.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_pre.prf \
+		parser/include.inc \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/resolve_config.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_post.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/unix/gdb_dwarf_index.prf \
@@ -270,6 +273,7 @@ Makefile: pragma.pro ../../../tools/qt/5.2.1/gcc_64/mkspecs/linux-g++/qmake.conf
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_post.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_pre.prf \
+		parser/include.inc \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/resolve_config.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_post.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/unix/gdb_dwarf_index.prf \
@@ -284,8 +288,9 @@ Makefile: pragma.pro ../../../tools/qt/5.2.1/gcc_64/mkspecs/linux-g++/qmake.conf
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/yacc.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/lex.prf \
 		pragma.pro \
-		/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib/libQt5Gui.prl \
-		/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib/libQt5Core.prl
+		/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib/libQt5Xml.prl \
+		/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib/libQt5Core.prl \
+		/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib/libQt5Gui.prl
 	$(QMAKE) -o Makefile pragma.pro
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_pre.prf:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/common/shell-unix.conf:
@@ -375,6 +380,7 @@ Makefile: pragma.pro ../../../tools/qt/5.2.1/gcc_64/mkspecs/linux-g++/qmake.conf
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_post.prf:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/exclusive_builds.prf:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_pre.prf:
+parser/include.inc:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/resolve_config.prf:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_post.prf:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/unix/gdb_dwarf_index.prf:
@@ -389,8 +395,9 @@ Makefile: pragma.pro ../../../tools/qt/5.2.1/gcc_64/mkspecs/linux-g++/qmake.conf
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/yacc.prf:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/lex.prf:
 pragma.pro:
-/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib/libQt5Gui.prl:
+/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib/libQt5Xml.prl:
 /home/gooddocteur/tools/qt/5.2.1/gcc_64/lib/libQt5Core.prl:
+/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib/libQt5Gui.prl:
 qmake: FORCE
 	@$(QMAKE) -o Makefile pragma.pro
 
@@ -398,7 +405,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/pragma1.0.0 || mkdir -p .tmp/pragma1.0.0
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/pragma1.0.0/ && $(COPY_FILE) --parents main.cpp .tmp/pragma1.0.0/ && (cd `dirname .tmp/pragma1.0.0` && $(TAR) pragma1.0.0.tar pragma1.0.0 && $(COMPRESS) pragma1.0.0.tar) && $(MOVE) `dirname .tmp/pragma1.0.0`/pragma1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/pragma1.0.0
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/pragma1.0.0/ && $(COPY_FILE) --parents parser/tmx_parser.hpp .tmp/pragma1.0.0/ && $(COPY_FILE) --parents parser/tmx_parser.cpp main.cpp .tmp/pragma1.0.0/ && (cd `dirname .tmp/pragma1.0.0` && $(TAR) pragma1.0.0.tar pragma1.0.0 && $(COMPRESS) pragma1.0.0.tar) && $(MOVE) `dirname .tmp/pragma1.0.0`/pragma1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/pragma1.0.0
 
 
 clean:compiler_clean 
@@ -434,6 +441,53 @@ compiler_lex_clean:
 compiler_clean: 
 
 ####### Compile
+
+tmx_parser.o: parser/tmx_parser.cpp parser/tmx_parser.hpp \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QString \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstring.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qchar.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qglobal.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qconfig.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfeatures.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qsystemdetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qprocessordetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qbasicatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qgenericatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_integrity.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qoldbasicatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_vxworks.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_power.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_alpha.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv7.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv6.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv5.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_bfin.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_ia64.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_mips.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_s390.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_sh4a.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_sparc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_x86.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_gcc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_unix.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qmutex.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qlogging.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qflags.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qtypeinfo.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qtypetraits.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qsysinfo.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qbytearray.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qrefcount.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qnamespace.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qarraydata.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstringbuilder.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tmx_parser.o parser/tmx_parser.cpp
 
 main.o: main.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
