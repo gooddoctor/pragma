@@ -5,8 +5,8 @@
 #include <tuple>
 #include <vector>
 
-#include <QString>
 #include <QFile>
+#include <QString>
 
 class TMXParser {
 public:

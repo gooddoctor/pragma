@@ -45,9 +45,13 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = parser/tmx_parser.cpp \
+SOURCES       = object/object.cpp \
+		parser/tmx_parser.cpp \
+		parser/layer_parser.cpp \
 		main.cpp 
-OBJECTS       = tmx_parser.o \
+OBJECTS       = object.o \
+		tmx_parser.o \
+		layer_parser.o \
 		main.o
 DIST          = ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/common/shell-unix.conf \
@@ -137,6 +141,7 @@ DIST          = ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_post.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_pre.prf \
+		object/include.inc \
 		parser/include.inc \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/resolve_config.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_post.prf \
@@ -273,6 +278,7 @@ Makefile: pragma.pro ../../../tools/qt/5.2.1/gcc_64/mkspecs/linux-g++/qmake.conf
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_post.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_pre.prf \
+		object/include.inc \
 		parser/include.inc \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/resolve_config.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_post.prf \
@@ -380,6 +386,7 @@ Makefile: pragma.pro ../../../tools/qt/5.2.1/gcc_64/mkspecs/linux-g++/qmake.conf
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_post.prf:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/exclusive_builds.prf:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_pre.prf:
+object/include.inc:
 parser/include.inc:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/resolve_config.prf:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_post.prf:
@@ -405,7 +412,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/pragma1.0.0 || mkdir -p .tmp/pragma1.0.0
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/pragma1.0.0/ && $(COPY_FILE) --parents parser/tmx_parser.hpp .tmp/pragma1.0.0/ && $(COPY_FILE) --parents parser/tmx_parser.cpp main.cpp .tmp/pragma1.0.0/ && (cd `dirname .tmp/pragma1.0.0` && $(TAR) pragma1.0.0.tar pragma1.0.0 && $(COMPRESS) pragma1.0.0.tar) && $(MOVE) `dirname .tmp/pragma1.0.0`/pragma1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/pragma1.0.0
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/pragma1.0.0/ && $(COPY_FILE) --parents object/object.hpp parser/tmx_parser.hpp parser/layer_parser.hpp .tmp/pragma1.0.0/ && $(COPY_FILE) --parents object/object.cpp parser/tmx_parser.cpp parser/layer_parser.cpp main.cpp .tmp/pragma1.0.0/ && (cd `dirname .tmp/pragma1.0.0` && $(TAR) pragma1.0.0.tar pragma1.0.0 && $(COMPRESS) pragma1.0.0.tar) && $(MOVE) `dirname .tmp/pragma1.0.0`/pragma1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/pragma1.0.0
 
 
 clean:compiler_clean 
@@ -442,7 +449,7 @@ compiler_clean:
 
 ####### Compile
 
-tmx_parser.o: parser/tmx_parser.cpp parser/tmx_parser.hpp \
+object.o: object/object.cpp object/object.hpp \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QString \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstring.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qchar.h \
@@ -487,7 +494,80 @@ tmx_parser.o: parser/tmx_parser.cpp parser/tmx_parser.hpp \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qnamespace.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qarraydata.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstringbuilder.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o object.o object/object.cpp
+
+tmx_parser.o: parser/tmx_parser.cpp ../../../tools/qt/5.2.1/gcc_64/include/QtXml/QDomDocument \
+		../../../tools/qt/5.2.1/gcc_64/include/QtXml/qdom.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtXml/qtxmlglobal.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qglobal.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qconfig.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfeatures.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qsystemdetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qprocessordetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qbasicatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qgenericatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_integrity.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qoldbasicatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_vxworks.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_power.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_alpha.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv7.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv6.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv5.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_bfin.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_ia64.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_mips.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_s390.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_sh4a.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_sparc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_x86.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_gcc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_unix.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qmutex.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qlogging.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qflags.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qtypeinfo.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qtypetraits.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qsysinfo.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstring.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qchar.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qbytearray.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qrefcount.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qnamespace.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qarraydata.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstringbuilder.h \
+		../lib/base64/base64.hpp \
+		../lib/zlib-1.2.8/include/zlib.h \
+		../lib/zlib-1.2.8/include/zconf.h \
+		parser/tmx_parser.hpp \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QFile \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfile.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfiledevice.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qiodevice.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qobject.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qobjectdefs.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qlist.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qalgorithms.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qiterator.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qcoreevent.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qscopedpointer.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qmetatype.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qvarlengtharray.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qcontainerfwd.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qisenum.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qobject_impl.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QString
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tmx_parser.o parser/tmx_parser.cpp
+
+layer_parser.o: parser/layer_parser.cpp parser/layer_parser.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o layer_parser.o parser/layer_parser.cpp
 
 main.o: main.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
