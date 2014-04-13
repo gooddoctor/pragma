@@ -5,8 +5,16 @@
 TEMPLATE = app
 TARGET = pragma
 INCLUDEPATH += . ../lib/zlib-1.2.8/include ../lib/base64
-LIBPATH += ../lib/zlib-1.2.8/lib ../lib/base64
-LIBS += -lz -lbase64
+LIBPATH += ../lib/zlib-1.2.8/lib ../lib/base64 /usr/include/SDL2
+LIBS += -lz -lbase64 -lSDL2 -lSDL2_image -lpthread 
+
+QMAKE_CXX = clang++
+QMAKE_LINK = clang++
+QMAKE_CXXFLAGS += -std=c++11 -D_REENTRANT 
+
+QT += xml
+
+include(parser/include.inc)
 
 # Input
 SOURCES += main.cpp
