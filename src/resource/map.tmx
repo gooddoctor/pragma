@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map SYSTEM "http://mapeditor.org/dtd/1.0/map.dtd">
+<map version="1.0" orientation="orthogonal" width="100" height="100" tilewidth="4" tileheight="4">
+ <tileset firstgid="1" name="room" tilewidth="360" tileheight="400">
+  <image source="room.png" width="360" height="400"/>
+ </tileset>
+ <tileset firstgid="2" name="door" tilewidth="44" tileheight="132">
+  <image source="door.png" width="44" height="132"/>
+ </tileset>
+ <tileset firstgid="3" name="window" tilewidth="68" tileheight="116">
+  <image source="window.png" width="68" height="116"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztzjENAAAIA7Dh3zTJTMDRKmgCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAHcx2gFp3IAAI=
+  </data>
+ </layer>
+ <layer name="Tile Layer 2" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztzjERAAAIAKE/+4c2hg6QgAIAAAAAAAAAAAAAAICa6wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwBMLb/8AAw==
+  </data>
+ </layer>
+ <layer name="Tile Layer 3" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztzgEJAAAIA7CD/Tsb44JbgiUAAAAAAAAAAAAAAAAAAPDPtAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMBZC77XAAQ=
+  </data>
+ </layer>
+</map>
