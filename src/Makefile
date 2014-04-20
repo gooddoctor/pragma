@@ -18,7 +18,7 @@ CXXFLAGS      = -pipe -std=c++11 -D_REENTRANT -O2 -Wall -W -D_REENTRANT -fPIE $(
 INCPATH       = -I../../../tools/qt/5.2.1/gcc_64/mkspecs/linux-g++ -I. -I. -I../lib/zlib-1.2.8/include -I../lib/base64 -I../../../tools/qt/5.2.1/gcc_64/include -I../../../tools/qt/5.2.1/gcc_64/include/QtXml -I../../../tools/qt/5.2.1/gcc_64/include/QtGui -I../../../tools/qt/5.2.1/gcc_64/include/QtCore -I.
 LINK          = clang++
 LFLAGS        = -Wl,-O1 -Wl,-rpath,/home/gooddocteur/tools/qt/5.2.1/gcc_64 -Wl,-rpath,/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib
-LIBS          = $(SUBLIBS) -L../lib/zlib-1.2.8/lib -L../lib/base64 -L/usr/include/SDL2 -lz -lbase64 -lSDL2 -lSDL2_image -L/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib -lQt5Xml -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L../lib/zlib-1.2.8/lib -L../lib/base64 -L../lib/ttf -lz -lbase64 -lSDL2 -lSDL2_image -lSDL2_ttf -L/home/gooddocteur/tools/qt/5.2.1/gcc_64/lib -lQt5Xml -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 QMAKE         = /home/gooddocteur/bin/qmake
@@ -687,8 +687,14 @@ main.o: main.cpp ../../../tools/qt/5.2.1/gcc_64/include/QtCore/QDebug \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qpoint.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qset.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qcontiguouscache.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QDir \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qdir.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfileinfo.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfile.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfiledevice.h \
 		parser/parser.hpp \
-		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QString
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QString \
+		object/object.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 ####### Install
