@@ -1,11 +1,10 @@
 #include <QDebug>
 #include <QDir>
 
-#include <SDL2/SDL.h>
-
+#include "object/sprite.hpp"
 #include "parser/parser.hpp"
-#include "object/object.hpp"
 
+using namespace object;
 using namespace parser;
 
 int main(int , char**) {
@@ -19,16 +18,16 @@ int main(int , char**) {
   SDL_SetRenderDrawColor(renderer, 0,0,0,255);
   SDL_RenderClear(renderer);
   
+  Object* top = new Object(nullptr, -1, -1, -1, "");
   QDir data_dir("resource/");
   std::vector<TMXObject> objects = LayerParser::comming_in_fast().parse(tmx);
   for (auto it = objects.begin(); it != objects.end(); it++) {
-    new Object(std::get<X>(*it), std::get<Y>(*it), data_dir.filePath(std::get<Sprite>(*it)));
+    new Sprite(top, std::get<X>(*it), std::get<Y>(*it), std::get<Z>(*it), "",
+	       data_dir.filePath(std::get<Source>(*it)));
   }
-  new Object(100, 380, data_dir.filePath("alter_ego.png"));
+  new Sprite(top, 100, 380, 10, "Alter_ego", data_dir.filePath("alter_ego.png"));
 
-  for (auto it = Object::all.begin(); it != Object::all.end(); it++) {
-    (*it)->render(renderer);
-  }
+  top->render(renderer);
   SDL_RenderPresent(renderer);
   
   SDL_Event event;

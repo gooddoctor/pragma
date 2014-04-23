@@ -13,7 +13,7 @@ namespace parser {
   typedef std::vector<std::pair<int, std::vector<int> > > TMXLayer;
   typedef std::tuple<int, int, int, QString> TMXObject;
   typedef std::tuple<TMXMap, TMXTileset, TMXLayer> TMX;
-  enum {X, Y, Z, Sprite};
+  enum {X, Y, Z, Source};
   enum {Map, Tileset, Layer};
 
   class TMXParser {
