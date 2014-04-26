@@ -45,13 +45,17 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = object/primitive/object.cpp \
-		object/sprite.cpp \
+SOURCES       = object/primitive/base/object.cpp \
+		object/primitive/sprite.cpp \
+		object/image.cpp \
+		object/text.cpp \
 		parser/layer_parser.cpp \
 		parser/tmx_parser.cpp \
 		main.cpp 
 OBJECTS       = object.o \
 		sprite.o \
+		image.o \
+		text.o \
 		layer_parser.o \
 		tmx_parser.o \
 		main.o
@@ -143,6 +147,7 @@ DIST          = ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_post.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_pre.prf \
+		object/primitive/base/include.inc \
 		object/primitive/include.inc \
 		object/include.inc \
 		parser/include.inc \
@@ -281,6 +286,7 @@ Makefile: pragma.pro ../../../tools/qt/5.2.1/gcc_64/mkspecs/linux-g++/qmake.conf
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_post.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_pre.prf \
+		object/primitive/base/include.inc \
 		object/primitive/include.inc \
 		object/include.inc \
 		parser/include.inc \
@@ -390,6 +396,7 @@ Makefile: pragma.pro ../../../tools/qt/5.2.1/gcc_64/mkspecs/linux-g++/qmake.conf
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/spec_post.prf:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/exclusive_builds.prf:
 ../../../tools/qt/5.2.1/gcc_64/mkspecs/features/default_pre.prf:
+object/primitive/base/include.inc:
 object/primitive/include.inc:
 object/include.inc:
 parser/include.inc:
@@ -417,7 +424,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/pragma1.0.0 || mkdir -p .tmp/pragma1.0.0
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/pragma1.0.0/ && $(COPY_FILE) --parents object/primitive/object.hpp object/sprite.hpp parser/parser.hpp .tmp/pragma1.0.0/ && $(COPY_FILE) --parents object/primitive/object.cpp object/sprite.cpp parser/layer_parser.cpp parser/tmx_parser.cpp main.cpp .tmp/pragma1.0.0/ && (cd `dirname .tmp/pragma1.0.0` && $(TAR) pragma1.0.0.tar pragma1.0.0 && $(COMPRESS) pragma1.0.0.tar) && $(MOVE) `dirname .tmp/pragma1.0.0`/pragma1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/pragma1.0.0
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/pragma1.0.0/ && $(COPY_FILE) --parents object/primitive/base/object.hpp object/primitive/sprite.hpp object/image.hpp object/text.hpp parser/parser.hpp .tmp/pragma1.0.0/ && $(COPY_FILE) --parents object/primitive/base/object.cpp object/primitive/sprite.cpp object/image.cpp object/text.cpp parser/layer_parser.cpp parser/tmx_parser.cpp main.cpp .tmp/pragma1.0.0/ && (cd `dirname .tmp/pragma1.0.0` && $(TAR) pragma1.0.0.tar pragma1.0.0 && $(COMPRESS) pragma1.0.0.tar) && $(MOVE) `dirname .tmp/pragma1.0.0`/pragma1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/pragma1.0.0
 
 
 clean:compiler_clean 
@@ -454,7 +461,7 @@ compiler_clean:
 
 ####### Compile
 
-object.o: object/primitive/object.cpp object/primitive/object.hpp \
+object.o: object/primitive/base/object.cpp object/primitive/base/object.hpp \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QString \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstring.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qchar.h \
@@ -499,10 +506,10 @@ object.o: object/primitive/object.cpp object/primitive/object.hpp \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qnamespace.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qarraydata.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstringbuilder.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o object.o object/primitive/object.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o object.o object/primitive/base/object.cpp
 
-sprite.o: object/sprite.cpp object/sprite.hpp \
-		object/primitive/object.hpp \
+sprite.o: object/primitive/sprite.cpp object/primitive/sprite.hpp \
+		object/primitive/base/object.hpp \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QString \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstring.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qchar.h \
@@ -547,7 +554,105 @@ sprite.o: object/sprite.cpp object/sprite.hpp \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qnamespace.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qarraydata.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstringbuilder.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sprite.o object/sprite.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sprite.o object/primitive/sprite.cpp
+
+image.o: object/image.cpp object/image.hpp \
+		object/primitive/sprite.hpp \
+		object/primitive/base/object.hpp \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QString \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstring.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qchar.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qglobal.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qconfig.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfeatures.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qsystemdetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qprocessordetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qbasicatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qgenericatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_integrity.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qoldbasicatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_vxworks.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_power.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_alpha.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv7.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv6.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv5.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_bfin.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_ia64.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_mips.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_s390.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_sh4a.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_sparc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_x86.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_gcc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_unix.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qmutex.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qlogging.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qflags.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qtypeinfo.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qtypetraits.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qsysinfo.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qbytearray.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qrefcount.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qnamespace.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qarraydata.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstringbuilder.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o image.o object/image.cpp
+
+text.o: object/text.cpp object/text.hpp \
+		object/primitive/sprite.hpp \
+		object/primitive/base/object.hpp \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QString \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstring.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qchar.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qglobal.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qconfig.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfeatures.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qsystemdetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qprocessordetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qcompilerdetection.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qbasicatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qgenericatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_msvc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_integrity.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qoldbasicatomic.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_vxworks.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_power.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_alpha.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv7.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv6.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_armv5.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_bfin.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_ia64.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_mips.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_s390.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_sh4a.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_sparc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_x86.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_cxx11.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_gcc.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qatomic_unix.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qmutex.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qlogging.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qflags.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qtypeinfo.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qtypetraits.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qsysinfo.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qbytearray.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qrefcount.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qnamespace.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qarraydata.h \
+		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qstringbuilder.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o text.o object/text.cpp
 
 layer_parser.o: parser/layer_parser.cpp parser/parser.hpp \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QString \
@@ -745,9 +850,11 @@ main.o: main.cpp ../../../tools/qt/5.2.1/gcc_64/include/QtCore/QDebug \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfileinfo.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfile.h \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/qfiledevice.h \
-		object/sprite.hpp \
-		object/primitive/object.hpp \
+		object/image.hpp \
+		object/primitive/sprite.hpp \
+		object/primitive/base/object.hpp \
 		../../../tools/qt/5.2.1/gcc_64/include/QtCore/QString \
+		object/text.hpp \
 		parser/parser.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 

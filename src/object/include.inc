@@ -1,4 +1,5 @@
 include(primitive/include.inc)
-HEADERS += $$PWD/sprite.hpp
-SOURCES += $$PWD/sprite.cpp
+
+HEADERS += $$PWD/image.hpp $$PWD/text.hpp
+SOURCES += $$PWD/image.cpp $$PWD/text.cpp
 

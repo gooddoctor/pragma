@@ -1,7 +1,8 @@
 #include <QDebug>
 #include <QDir>
 
-#include "object/sprite.hpp"
+#include "object/image.hpp"
+#include "object/text.hpp"
 #include "parser/parser.hpp"
 
 using namespace object;
@@ -18,14 +19,19 @@ int main(int , char**) {
   SDL_SetRenderDrawColor(renderer, 0,0,0,255);
   SDL_RenderClear(renderer);
   
+  TTF_Init();
+
   Object* top = new Object(nullptr, -1, -1, -1, "");
   QDir data_dir("resource/");
   std::vector<TMXObject> objects = LayerParser::comming_in_fast().parse(tmx);
   for (auto it = objects.begin(); it != objects.end(); it++) {
-    new Sprite(top, std::get<X>(*it), std::get<Y>(*it), std::get<Z>(*it), "",
-	       data_dir.filePath(std::get<Source>(*it)));
+    new Image(top, std::get<X>(*it), std::get<Y>(*it), std::get<Z>(*it), "",
+  	       data_dir.filePath(std::get<Source>(*it)));
   }
-  new Sprite(top, 100, 380, 10, "Alter_ego", data_dir.filePath("alter_ego.png"));
+  new Image(top, 100, 380, 10, "Alter_ego", data_dir.filePath("alter_ego.png"));
+
+  new Text(top, 0, 12, 10, "Sheet", "Привет Мир", data_dir.filePath("Times New Roman Cyr.ttf"),
+	   12, {255, 255, 255, 0});
 
   top->render(renderer);
   SDL_RenderPresent(renderer);

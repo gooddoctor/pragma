@@ -21,3 +21,21 @@ Object* Object::render(SDL_Renderer* sdlrenderer) {
     it->render(sdlrenderer);
   return this;
 }
+
+
+void SurfaceDeleter::operator()(SDL_Surface* surface) {
+  SDL_FreeSurface(surface);
+}
+
+void TextureDeleter::operator()(SDL_Texture* texture) {
+  SDL_DestroyTexture(texture);
+}
+
+SDL_Rect object::rect(int x, int y, int w, int h) {
+  SDL_Rect rect;
+  rect.x = x;
+  rect.y = y;
+  rect.w = w;
+  rect.h = h;
+  return rect;
+}
