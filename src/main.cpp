@@ -3,6 +3,7 @@
 
 #include "object/image.hpp"
 #include "object/text.hpp"
+#include "object/menu.hpp"
 #include "parser/parser.hpp"
 
 using namespace object;
@@ -32,6 +33,8 @@ int main(int , char**) {
 
   new Text(top, 0, 12, 10, "Sheet", "Привет Мир", data_dir.filePath("Times New Roman Cyr.ttf"),
 	   12, {255, 255, 255, 0});
+
+  new Menu(top, 0, 340, 10, "Menu", {"Кто", "залечит", "рану", "мою"});
 
   top->render(renderer);
   SDL_RenderPresent(renderer);

@@ -39,3 +39,7 @@ SDL_Rect object::rect(int x, int y, int w, int h) {
   rect.h = h;
   return rect;
 }
+
+SDL_Color object::default_color = {255, 255, 255, 255};
+
+QString object::default_font = "resource/Times New Roman Cyr.ttf";

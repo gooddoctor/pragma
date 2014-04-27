@@ -35,6 +35,9 @@ namespace object {
   };
 
   SDL_Rect rect(int x, int y, int w, int h);
+
+  extern SDL_Color default_color;
+  extern QString default_font;
 }
 
 #endif
