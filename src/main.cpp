@@ -41,10 +41,15 @@ int main(int , char**) {
   
   SDL_Event event;
   while (true) {
-    SDL_PollEvent(&event);
-    switch (event.type) {
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
       case SDL_QUIT:
 	return -1;
+	break;
+      default:
+	top->event(event);
+	break;
+      }
     }
   }
 }
