@@ -37,7 +37,10 @@ int main(int , char**) {
   new Text(top, 0, 12, 10, "Sheet", "Привет Мир", data_dir.filePath("Times New Roman Cyr.ttf"),
 	   12, {255, 255, 255, 0});
 
-  new Menu(top, 0, 340, 10, "Menu", {"Кто", "залечит", "рану", "мою"});
+  Menu* menu = new Menu(top, 0, 340, 10, "Menu", {"Кто", "залечит", "рану", "мою"});
+  menu->on_select([](Menu*, Text*) {
+		    qDebug() << "you wonna live like common people";
+		  });
 
   top->render(renderer);
   SDL_RenderPresent(renderer);
