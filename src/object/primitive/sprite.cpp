@@ -24,3 +24,14 @@ int Sprite::w() {
   return surface->w;
 }
 
+Sprite* Sprite::on_mouse_button_up(const Callback& callback) {
+  button_up_callbacks.push_back(callback);
+  return this;
+}
+
+Sprite* Sprite::mouse_button_up_handler(const SDL_Event& e) {
+  for (auto it : button_up_callbacks)
+    it(this, e);
+  return this;
+}
+

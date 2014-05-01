@@ -29,7 +29,10 @@ int main(int , char**) {
     new Image(top, std::get<X>(*it), std::get<Y>(*it), std::get<Z>(*it), "",
   	       data_dir.filePath(std::get<Source>(*it)));
   }
-  new Image(top, 100, 380, 10, "Alter_ego", data_dir.filePath("alter_ego.png"));
+  Image* img = new Image(top, 100, 380, 10, "Alter_ego", data_dir.filePath("alter_ego.png"));
+  img->on_mouse_button_up([](Sprite*, const SDL_Event&) {
+			    qDebug() << "okey. its worked";
+			  });
 
   new Text(top, 0, 12, 10, "Sheet", "Привет Мир", data_dir.filePath("Times New Roman Cyr.ttf"),
 	   12, {255, 255, 255, 0});
