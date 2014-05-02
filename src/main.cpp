@@ -38,8 +38,11 @@ int main(int , char**) {
 	   12, {255, 255, 255, 0});
 
   Menu* menu = new Menu(top, 0, 340, 10, "Menu", {"Кто", "залечит", "рану", "мою"});
-  menu->on_select([](Menu*, Text*) {
+  menu->on_select([](Menu* m, Text*) {
 		    qDebug() << "you wonna live like common people";
+		    Menu::StringList entries({"только", "я", "один", "залечу"});
+   		    m->on_after(std::bind(&Menu::remove_children, m));
+		    m->on_after(std::bind(&Menu::set_entries, m, entries));
 		  });
 
   top->render(renderer);
@@ -54,6 +57,11 @@ int main(int , char**) {
 	break;
       default:
 	top->event(event);
+	top->after();
+	SDL_SetRenderDrawColor(renderer, 0,0,0,255);
+        SDL_RenderClear(renderer);
+        top->render(renderer);
+        SDL_RenderPresent(renderer);
 	break;
       }
     }

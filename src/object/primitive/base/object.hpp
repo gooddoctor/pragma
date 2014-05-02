@@ -2,6 +2,7 @@
 #define __OBJECT_H
 
 #include <memory>
+#include <queue>
 #include <vector>
 
 #include <QString>
@@ -12,17 +13,24 @@
 namespace object {
   class Object {
   public:
+  typedef std::function<void(void)> Callback;
   typedef std::function<Object*(Object*, const SDL_Event& e)> Handler;
   public:
     Object(Object* parent, int x, int y, int z, const QString& id);
+    virtual ~Object();
     virtual Object* add(Object* child);
+    virtual Object* after();
     virtual Object* event(const SDL_Event& e);
+    virtual Object* remove_children();
     virtual Object* render(SDL_Renderer* sdlrenderer);
     virtual bool contains(int x, int y);
     virtual int h();
     virtual int w();
+    virtual Object* on_after(const Callback& callback);
   private:
     Object* fire_if_contains(int x, int y, const Handler& handler, const SDL_Event& e);
+  private:
+    static std::queue<Callback> after_callbacks;
   private:
     std::vector<std::shared_ptr<Object> > children;
   protected:

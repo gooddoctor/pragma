@@ -2,6 +2,8 @@
 
 using namespace object;
 
+std::queue<Object::Callback> Object::after_callbacks;
+
 Object::Object(Object* parent, int x, int y, int z, const QString& id) {
   this->x = x;
   this->y = y;
@@ -11,8 +13,18 @@ Object::Object(Object* parent, int x, int y, int z, const QString& id) {
     parent->add(this);
 }
 
+Object::~Object() { }
+
 Object* Object::add(Object* child) {
   children.push_back(std::shared_ptr<Object>(child));
+  return this;
+}
+
+Object* Object::after() {
+  while (!after_callbacks.empty()) {
+    after_callbacks.front()();
+    after_callbacks.pop();
+  }
   return this;
 }
 
@@ -25,6 +37,11 @@ Object* Object::event(const SDL_Event& e) {
     mouse_motion_handler(e);
     break;
   }
+  return this;
+}
+
+Object* Object::remove_children() {
+  children.erase(children.begin(), children.end());
   return this;
 }
 
@@ -52,6 +69,11 @@ int Object::w() {
     if (width < it->w())
       width = it->w();
   return width;
+}
+
+Object* Object::on_after(const Callback& callback) {
+  after_callbacks.push(callback);
+  return this;
 }
 
 Object* Object::fire_if_contains(int x, int y, const Handler& handler, const SDL_Event& e) {
