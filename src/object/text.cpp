@@ -10,5 +10,19 @@ SDL_Surface* load_text(const QString& text, const QString& font,
 
 Text::Text(Object* parent, int x, int y, int z, const QString& id, 
            const QString& text, const QString& font, int font_size, const SDL_Color& color) :
-      Sprite(parent, x, y, z, id, std::bind(load_text, text, font, font_size, color)) { /* */ }
+      Sprite(parent, x, y, z, id, std::bind(load_text, text, font, font_size, color)) {
+  this->text = text;
+  this->font = font;
+  this->font_size = font_size;
+  this->color = color;
+}
 
+QString Text::get_text() {
+  return text;
+}
+
+Text* Text::set_text(const QString& text) {
+  this->text = text;
+  reload(std::bind(load_text, this->text, this->font, this->font_size, this->color));
+  return this;
+}

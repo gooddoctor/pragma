@@ -4,6 +4,7 @@
 #include "object/image.hpp"
 #include "object/text.hpp"
 #include "object/menu.hpp"
+#include "object/spin.hpp"
 #include "parser/parser.hpp"
 
 using namespace object;
@@ -44,6 +45,8 @@ int main(int , char**) {
    		    m->on_after(std::bind(&Menu::remove_children, m));
 		    m->on_after(std::bind(&Menu::set_entries, m, entries));
 		  });
+
+  Spin* spin = new Spin(top, 0, 380, 10, "Spin");
 
   top->render(renderer);
   SDL_RenderPresent(renderer);

@@ -4,7 +4,7 @@ using namespace object;
 
 Sprite::Sprite(Object* parent, int x, int y, int z, const QString& id,
 	       const SurfaceLoader& loader) : Object(parent, x, y, z, id) {
-  surface.reset(loader());
+  reload(loader);
 }
 
 Sprite* Sprite::render(SDL_Renderer* sdlrender) {
@@ -26,6 +26,12 @@ int Sprite::w() {
 
 Sprite* Sprite::on_mouse_button_up(const Callback& callback) {
   button_up_callbacks.push_back(callback);
+  return this;
+}
+
+Sprite* Sprite::reload(const SurfaceLoader& loader) {
+  surface.reset(loader());
+  texture.reset(nullptr);
   return this;
 }
 

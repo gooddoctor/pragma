@@ -15,6 +15,7 @@ namespace object {
     int w() override;
     Sprite* on_mouse_button_up(const Callback& callback);
   protected:
+    Sprite* reload(const SurfaceLoader& loader);
     Sprite* mouse_button_up_handler(const SDL_Event& e) override;
   protected:
     std::vector<Callback> button_up_callbacks;
