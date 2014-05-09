@@ -23,26 +23,29 @@ int main(int , char**) {
   
   TTF_Init();
 
-  Object* top = new Object(nullptr, -1, -1, -1, "");
+  Object* top = new Object(nullptr, -1, -1, -1, "TOP");
   QDir data_dir("resource/");
   std::vector<TMXObject> objects = LayerParser::comming_in_fast().parse(tmx);
   for (auto it = objects.begin(); it != objects.end(); it++) {
     new Image(top, std::get<X>(*it), std::get<Y>(*it), std::get<Z>(*it), "",
   	       data_dir.filePath(std::get<Source>(*it)));
   }
-  Image* img = new Image(top, 100, 380, 10, "Alter_ego", data_dir.filePath("alter_ego.png"));
+  Image* img = new Image(top, 100, 380, -20, "Alter_ego", data_dir.filePath("alter_ego.png"));
   img->on_mouse_button_up([](Sprite*, const SDL_Event&) {
 			    qDebug() << "okey. its worked";
 			  });
 
-  new Text(top, 0, 12, 10, "Sheet", "Привет Мир", data_dir.filePath("Times New Roman Cyr.ttf"),
-	   12, {255, 255, 255, 0});
+  Text* txt = new Text(top, 0, 12, 10, "Sheet", "Привет Мир", 
+		       data_dir.filePath("Times New Roman Cyr.ttf"), 12, {255, 255, 255, 0});
+  txt->on_mouse_button_up([top](Sprite*, const SDL_Event&) {
+			    qDebug() << top->to_string();
+			  });
 
   Menu* menu = new Menu(top, 0, 340, 10, "Menu", {"Кто", "залечит", "рану", "мою"});
   menu->on_select([](Menu* m, Text*) {
 		    qDebug() << "you wonna live like common people";
 		    Menu::StringList entries({"только", "я", "один", "залечу"});
-   		    m->on_after(std::bind(&Menu::remove_children, m));
+   		    m->on_after(std::bind(&Menu::remove_all, m));
 		    m->on_after(std::bind(&Menu::set_entries, m, entries));
 		  });
 

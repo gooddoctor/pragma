@@ -13,10 +13,28 @@ Object::Object(Object* parent, int x, int y, int z, const QString& id) {
     parent->add(this);
 }
 
-Object::~Object() { }
+int Object::get_x() {
+  return x;
+}
+
+int Object::get_y() {
+  return y;
+}
+
+int Object::get_z() {
+  return z;
+}
+
+QString Object::get_id() {
+  return id;
+}
 
 Object* Object::add(Object* child) {
   children.push_back(std::shared_ptr<Object>(child));
+  std::sort(children.begin(), children.end(),
+	    [](std::shared_ptr<Object> first, std::shared_ptr<Object> second) {
+	      return first->get_z() < second->get_z();
+	    });
   return this;
 }
 
@@ -40,7 +58,15 @@ Object* Object::event(const SDL_Event& e) {
   return this;
 }
 
-Object* Object::remove_children() {
+Object* Object::remove(Object* child) {
+  children.erase(std::find_if(children.begin(), children.end(),
+			      [child](std::shared_ptr<Object> ptr) {
+				return ptr.get() == child;
+			      }));
+  return this;
+}
+
+Object* Object::remove_all() {
   children.erase(children.begin(), children.end());
   return this;
 }
@@ -76,10 +102,17 @@ Object* Object::on_after(const Callback& callback) {
   return this;
 }
 
+QString Object::to_string() {
+  return to_string(0);
+}
+
 Object* Object::fire_if_contains(int x, int y, const Handler& handler, const SDL_Event& e) {
-  for (auto it : children)
-    if (it->contains(x, y))
-      handler(it.get(), e);
+  for (auto it = children.rbegin(); it != children.rend(); it++) {
+    if ((*it)->contains(x, y)) {
+      handler(it->get(), e);
+      break;
+    }
+  }
   return this;
 }
 
@@ -91,6 +124,12 @@ Object* Object::mouse_motion_handler(const SDL_Event& e) {
   return fire_if_contains(e.motion.x, e.motion.y, &Object::mouse_motion_handler, e);
 }
 
+QString Object::to_string(int tab) {
+  QString str = QString("%1%2:%3\n").arg("", tab).arg(id).arg(z);
+  for (auto it : children)
+    str.append(it->to_string(tab + 2));
+  return str;
+}
 
 void SurfaceDeleter::operator()(SDL_Surface* surface) {
   SDL_FreeSurface(surface);
