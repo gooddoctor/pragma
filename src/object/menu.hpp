@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "primitive/base/object.hpp"
+#include "image.hpp"
 
 namespace object {
   class Menu : public Object {
@@ -15,9 +15,11 @@ namespace object {
     Menu* set_entries(const StringList& entries);
     Menu* on_select(const Callback& callback);
   private:
+    Image* hint; 
     std::vector<Callback> select_callbacks;
   protected:
     void on_select_handler(Sprite* text, const SDL_Event&);
+    void on_fire_handler(Sprite* text, const SDL_Event&);
   };
 }
 

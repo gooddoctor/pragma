@@ -29,6 +29,17 @@ Sprite* Sprite::on_mouse_button_up(const Callback& callback) {
   return this;
 }
 
+Sprite* Sprite::on_mouse_motion(const Callback& callback) {
+  motion_callbacks.push_back(callback);
+  return this;
+}
+
+Sprite* Sprite::fire_callbacks(const std::vector<Callback>& callbacks, const SDL_Event& e) {
+  for (auto it : callbacks)
+    it(this, e);
+  return this;
+}
+
 Sprite* Sprite::reload(const SurfaceLoader& loader) {
   surface.reset(loader());
   texture.reset(nullptr);
@@ -36,8 +47,11 @@ Sprite* Sprite::reload(const SurfaceLoader& loader) {
 }
 
 Sprite* Sprite::mouse_button_up_handler(const SDL_Event& e) {
-  for (auto it : button_up_callbacks)
-    it(this, e);
+  fire_callbacks(button_up_callbacks, e);
   return this;
 }
 
+Sprite* Sprite::mouse_motion_handler(const SDL_Event& e) {
+  fire_callbacks(motion_callbacks, e);
+  return this;
+}

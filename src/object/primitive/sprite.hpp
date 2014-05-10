@@ -14,11 +14,16 @@ namespace object {
     int h() override;
     int w() override;
     Sprite* on_mouse_button_up(const Callback& callback);
+    Sprite* on_mouse_motion(const Callback& callback);
+  private:
+    Sprite* fire_callbacks(const std::vector<Callback>& callbacks, const SDL_Event& e);
   protected:
     Sprite* reload(const SurfaceLoader& loader);
     Sprite* mouse_button_up_handler(const SDL_Event& e) override;
+    Sprite* mouse_motion_handler(const SDL_Event& e) override;
   protected:
     std::vector<Callback> button_up_callbacks;
+    std::vector<Callback> motion_callbacks;
     std::unique_ptr<SDL_Surface, SurfaceDeleter> surface;
     std::unique_ptr<SDL_Texture, TextureDeleter> texture;
   };

@@ -19,7 +19,9 @@ namespace object {
     Object(Object* parent, int x, int y, int z, const QString& id);
     virtual ~Object() = default;
     virtual int get_x();
+    virtual Object* set_x(int x);
     virtual int get_y();
+    virtual Object* set_y(int y);
     virtual int get_z();
     virtual QString get_id();
     virtual Object* add(Object* child);
@@ -28,6 +30,9 @@ namespace object {
     virtual Object* remove(Object* child);
     virtual Object* remove_all();
     virtual Object* render(SDL_Renderer* sdlrenderer);
+    virtual Object* show();
+    virtual bool is_show();
+    virtual Object* hide();
     virtual bool contains(int x, int y);
     virtual int h();
     virtual int w();
@@ -37,6 +42,7 @@ namespace object {
     Object* fire_if_contains(int x, int y, const Handler& handler, const SDL_Event& e);
   private:
     static std::queue<Callback> after_callbacks;
+    bool is_hide = false;
   private:
     std::vector<std::shared_ptr<Object> > children;
   protected:

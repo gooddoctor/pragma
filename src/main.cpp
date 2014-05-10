@@ -10,6 +10,41 @@
 using namespace object;
 using namespace parser;
 
+QDir data_dir("resource/");
+
+void create_menu(Object* top);
+void spin_box(Object* top);
+
+void create_menu(Object* top) {
+  Menu* menu = new Menu(top, 0, 400, 20, "Menu", {"ОТМЕНА ОПЕРАЦИИ", "Купить"});
+  menu->on_select([top](Menu* m, Text* t) {
+    if (t->get_text() == "Купить") {
+      top->on_after(std::bind(&Object::remove, top, m));
+      top->on_after(std::bind(spin_box, top));
+    } else {
+      top->on_after(std::bind(&Object::remove, top, m));
+    }
+  });
+}
+      
+void spin_box(Object* top) {
+  Spin* spin = new Spin(top, 32, 400, 20, "Spin");
+  Image* up = new Image(top, 0, 400 - 32, 20, "up", data_dir.filePath("thumb_up.png"));
+  Image* down = new Image(top, 0, 400, 20, "down", data_dir.filePath("thumb_down.png"));
+  
+  up->on_mouse_button_up([top, spin, up, down](Sprite*, const SDL_Event&) {
+    top->on_after(std::bind(&Object::remove, top, spin));
+    top->on_after(std::bind(&Object::remove, top, up));
+    top->on_after(std::bind(&Object::remove, top, down));
+  });
+
+  down->on_mouse_button_up([top, spin, up, down](Sprite*, const SDL_Event&) {
+    top->on_after(std::bind(&Object::remove, top, spin));
+    top->on_after(std::bind(&Object::remove, top, up));
+    top->on_after(std::bind(&Object::remove, top, down));
+  });
+}
+
 int main(int , char**) {
   TMX tmx = TMXParser::comming_in_fast().parse("resource/map.tmx");
   int width = std::get<Map>(tmx)["width"] * std::get<Map>(tmx)["tilewidth"];
@@ -24,32 +59,17 @@ int main(int , char**) {
   TTF_Init();
 
   Object* top = new Object(nullptr, -1, -1, -1, "TOP");
-  QDir data_dir("resource/");
+
   std::vector<TMXObject> objects = LayerParser::comming_in_fast().parse(tmx);
   for (auto it = objects.begin(); it != objects.end(); it++) {
     new Image(top, std::get<X>(*it), std::get<Y>(*it), std::get<Z>(*it), "",
   	       data_dir.filePath(std::get<Source>(*it)));
   }
-  Image* img = new Image(top, 100, 380, -20, "Alter_ego", data_dir.filePath("alter_ego.png"));
-  img->on_mouse_button_up([](Sprite*, const SDL_Event&) {
-			    qDebug() << "okey. its worked";
-			  });
 
-  Text* txt = new Text(top, 0, 12, 10, "Sheet", "Привет Мир", 
-		       data_dir.filePath("Times New Roman Cyr.ttf"), 12, {255, 255, 255, 0});
-  txt->on_mouse_button_up([top](Sprite*, const SDL_Event&) {
-			    qDebug() << top->to_string();
-			  });
-
-  Menu* menu = new Menu(top, 0, 340, 10, "Menu", {"Кто", "залечит", "рану", "мою"});
-  menu->on_select([](Menu* m, Text*) {
-		    qDebug() << "you wonna live like common people";
-		    Menu::StringList entries({"только", "я", "один", "залечу"});
-   		    m->on_after(std::bind(&Menu::remove_all, m));
-		    m->on_after(std::bind(&Menu::set_entries, m, entries));
-		  });
-
-  Spin* spin = new Spin(top, 0, 380, 10, "Spin");
+  Image* img = new Image(top, 100, 380, 20, "Alter_ego", data_dir.filePath("alter_ego.png"));
+  img->on_mouse_button_up([top](Sprite*, const SDL_Event&) {
+    top->on_after(std::bind(create_menu, top));
+  });
 
   top->render(renderer);
   SDL_RenderPresent(renderer);

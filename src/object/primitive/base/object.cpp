@@ -17,8 +17,18 @@ int Object::get_x() {
   return x;
 }
 
+Object* Object::set_x(int x) {
+  this->x = x;
+  return this;
+}
+
 int Object::get_y() {
   return y;
+}
+
+Object* Object::set_y(int y) {
+  this->y = y;
+  return this;
 }
 
 int Object::get_z() {
@@ -72,8 +82,24 @@ Object* Object::remove_all() {
 }
 
 Object* Object::render(SDL_Renderer* sdlrenderer) {
-  for (auto it : children)
-    it->render(sdlrenderer);
+  if (is_show())
+    for (auto it : children)
+      if (it->is_show())
+	it->render(sdlrenderer);
+  return this;
+}
+
+Object* Object::show() {
+  is_hide = false;
+  return this;
+}
+
+bool Object::is_show() {
+  return !is_hide;
+}
+
+Object* Object::hide() {
+  is_hide = true;
   return this;
 }
 
