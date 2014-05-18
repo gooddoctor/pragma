@@ -1,49 +1,68 @@
 #include <QDebug>
 #include <QDir>
 
+#include "game/game.hpp"
 #include "object/image.hpp"
 #include "object/text.hpp"
 #include "object/menu.hpp"
 #include "object/spin.hpp"
 #include "parser/parser.hpp"
 
+using namespace game;
 using namespace object;
 using namespace parser;
 
+Game pragma;
+
 QDir data_dir("resource/");
 
-void create_menu(Object* top);
-void spin_box(Object* top);
+void count(Object* top, QString text) {
+  Spin* spin = new Spin(top, 32, 400, 20, "count");
+  Image* up = new Image(top, 0, 400 - 32, 20, "up", data_dir.filePath("thumb_up.png"));
+  Image* down = new Image(top, 0, 400, 20, "down", data_dir.filePath("thumb_down.png"));
+  up->on_mouse_button_up([top, spin, up, down, text](Sprite*, const SDL_Event&) {
+     top->on_after(std::bind(&Object::remove, top, spin));
+     top->on_after(std::bind(&Object::remove, top, up));
+     top->on_after(std::bind(&Object::remove, top, down));
+     if (text == "GAS")
+       pragma.player_buying(game::RESOURCE::GAS, spin->val());
+     else if (text == "OIL")
+       pragma.player_buying(game::RESOURCE::OIL, spin->val());
+     else if (text == "METAL")
+       pragma.player_buying(game::RESOURCE::METAL, spin->val());
+     qDebug() << pragma.to_string();
+  });
+  down->on_mouse_button_up([top, spin, up, down, text](Sprite*, const SDL_Event&) {
+    top->on_after(std::bind(&Object::remove, top, spin));
+    top->on_after(std::bind(&Object::remove, top, up));
+    top->on_after(std::bind(&Object::remove, top, down));
+  });
+}
 
-void create_menu(Object* top) {
-  Menu* menu = new Menu(top, 0, 400, 20, "Menu", {"ОТМЕНА ОПЕРАЦИИ", "Купить"});
+void buy(Object* top) {
+  Menu* menu = new Menu(top, 0, 400, 20, "Buy", {"ОТМЕНА ОПЕРАЦИИ", "GAS", "OIL", "METAL"});
   menu->on_select([top](Menu* m, Text* t) {
-    if (t->get_text() == "Купить") {
+    if (t->get_text() != "ОТМЕНА ОПЕРАЦИИ") {
       top->on_after(std::bind(&Object::remove, top, m));
-      top->on_after(std::bind(spin_box, top));
+      top->on_after(std::bind(count, top, t->get_text()));
     } else {
       top->on_after(std::bind(&Object::remove, top, m));
     }
   });
 }
-      
-void spin_box(Object* top) {
-  Spin* spin = new Spin(top, 32, 400, 20, "Spin");
-  Image* up = new Image(top, 0, 400 - 32, 20, "up", data_dir.filePath("thumb_up.png"));
-  Image* down = new Image(top, 0, 400, 20, "down", data_dir.filePath("thumb_down.png"));
-  
-  up->on_mouse_button_up([top, spin, up, down](Sprite*, const SDL_Event&) {
-    top->on_after(std::bind(&Object::remove, top, spin));
-    top->on_after(std::bind(&Object::remove, top, up));
-    top->on_after(std::bind(&Object::remove, top, down));
-  });
 
-  down->on_mouse_button_up([top, spin, up, down](Sprite*, const SDL_Event&) {
-    top->on_after(std::bind(&Object::remove, top, spin));
-    top->on_after(std::bind(&Object::remove, top, up));
-    top->on_after(std::bind(&Object::remove, top, down));
+void trade(Object* top) {
+  Menu* menu = new Menu(top, 0, 400, 20, "Trade", {"ОТМЕНА ОПЕРАЦИИ", "Продать", "Купить"});
+  menu->on_select([top](Menu* m, Text* t) {
+    if (t->get_text() == "Купить") {
+      top->on_after(std::bind(&Object::remove, top, m));
+      top->on_after(std::bind(buy, top));
+    } else {
+      top->on_after(std::bind(&Object::remove, top, m));
+    }
   });
 }
+
 
 int main(int , char**) {
   TMX tmx = TMXParser::comming_in_fast().parse("resource/map.tmx");
@@ -68,7 +87,7 @@ int main(int , char**) {
 
   Image* img = new Image(top, 100, 380, 20, "Alter_ego", data_dir.filePath("alter_ego.png"));
   img->on_mouse_button_up([top](Sprite*, const SDL_Event&) {
-    top->on_after(std::bind(create_menu, top));
+    top->on_after(std::bind(trade, top));
   });
 
   top->render(renderer);

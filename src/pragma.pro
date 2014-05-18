@@ -14,6 +14,7 @@ QMAKE_CXXFLAGS += -std=c++11 -D_REENTRANT
 
 QT += xml
 
+include(game/include.inc)
 include(object/include.inc)
 include(parser/include.inc)
 
