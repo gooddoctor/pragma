@@ -23,17 +23,23 @@ Game::Game() {
   resources.insert({GAS, 5});
   resources.insert({OIL, 6});
   resources.insert({METAL, 7});
+  //init after queue
+  after.insert({ME, A});
+  after.insert({A, B});
+  after.insert({B, C});
+  after.insert({C, ME});
 }
 
-Game* Game::player_buying(RESOURCE resource, int amount) {
+Game* Game::player_bought(RESOURCE resource, int amount) {
   return player_trade(MONEY, resources[resource] * amount, resource, amount);
 }
 
-Game* Game::player_selling(RESOURCE resource, int amount) {
+Game* Game::player_sold(RESOURCE resource, int amount) {
   return player_trade(resource, amount, MONEY, resources[resource] * amount);
 }
 
 Game* Game::player_made_move() {
+  current_one = after[current_one];
   return this;
 }
 
@@ -45,8 +51,8 @@ QString Game::to_string() {
 }
 
 Game* Game::player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
-  players[one][x] -= x_amount;
-  players[one][y] += y_amount;
+  players[current_one][x] -= x_amount;
+  players[current_one][y] += y_amount;
   return this;
 }
 

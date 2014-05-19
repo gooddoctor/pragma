@@ -25,11 +25,11 @@ void count(Object* top, QString text) {
      top->on_after(std::bind(&Object::remove, top, up));
      top->on_after(std::bind(&Object::remove, top, down));
      if (text == "GAS")
-       pragma.player_buying(game::RESOURCE::GAS, spin->val());
+       pragma.player_bought(game::RESOURCE::GAS, spin->val());
      else if (text == "OIL")
-       pragma.player_buying(game::RESOURCE::OIL, spin->val());
+       pragma.player_bought(game::RESOURCE::OIL, spin->val());
      else if (text == "METAL")
-       pragma.player_buying(game::RESOURCE::METAL, spin->val());
+       pragma.player_bought(game::RESOURCE::METAL, spin->val());
      qDebug() << pragma.to_string();
   });
   down->on_mouse_button_up([top, spin, up, down, text](Sprite*, const SDL_Event&) {
@@ -88,6 +88,13 @@ int main(int , char**) {
   Image* img = new Image(top, 100, 380, 20, "Alter_ego", data_dir.filePath("alter_ego.png"));
   img->on_mouse_button_up([top](Sprite*, const SDL_Event&) {
     top->on_after(std::bind(trade, top));
+  });
+
+  Image* hourglass = new Image(top, 400 - 64, 400, 20, "Hourglass", 
+			       data_dir.filePath("hourglass.png"));
+  hourglass->on_mouse_button_up([](Sprite*, const SDL_Event&) {
+    qDebug() << "player made move";
+    pragma.player_made_move();
   });
 
   top->render(renderer);
