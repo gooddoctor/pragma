@@ -16,20 +16,20 @@ Game pragma;
 
 QDir data_dir("resource/");
 
-void count(Object* top, QString text) {
+void count(Object* top, QString text, std::function<void(RESOURCE, int)> action) {
   Spin* spin = new Spin(top, 32, 400, 20, "count");
-  Image* up = new Image(top, 0, 400 - 32, 20, "up", data_dir.filePath("thumb_up.png"));
+  Image* up = new Image(top, 0, 400 - 32 - 4, 20, "up", data_dir.filePath("thumb_up.png"));
   Image* down = new Image(top, 0, 400, 20, "down", data_dir.filePath("thumb_down.png"));
-  up->on_mouse_button_up([top, spin, up, down, text](Sprite*, const SDL_Event&) {
+  up->on_mouse_button_up([top, spin, up, down, text, action](Sprite*, const SDL_Event&) {
      top->on_after(std::bind(&Object::remove, top, spin));
      top->on_after(std::bind(&Object::remove, top, up));
      top->on_after(std::bind(&Object::remove, top, down));
      if (text == "GAS")
-       pragma.player_bought(game::RESOURCE::GAS, spin->val());
+       action(game::RESOURCE::GAS, spin->val());
      else if (text == "OIL")
-       pragma.player_bought(game::RESOURCE::OIL, spin->val());
+       action(game::RESOURCE::OIL, spin->val());
      else if (text == "METAL")
-       pragma.player_bought(game::RESOURCE::METAL, spin->val());
+       action(game::RESOURCE::METAL, spin->val());
      qDebug() << pragma.to_string();
   });
   down->on_mouse_button_up([top, spin, up, down, text](Sprite*, const SDL_Event&) {
@@ -44,12 +44,29 @@ void buy(Object* top) {
   menu->on_select([top](Menu* m, Text* t) {
     if (t->get_text() != "ОТМЕНА ОПЕРАЦИИ") {
       top->on_after(std::bind(&Object::remove, top, m));
-      top->on_after(std::bind(count, top, t->get_text()));
+      top->on_after(std::bind(count, top, t->get_text(), [](RESOURCE r, int a) {
+							   pragma.player_bought(r, a);
+							 }));
     } else {
       top->on_after(std::bind(&Object::remove, top, m));
     }
   });
 }
+
+void sell(Object* top) {
+  Menu* menu = new Menu(top, 0, 400, 20, "Sell", {"ОТМЕНА ОПЕРАЦИИ", "GAS", "OIL", "METAL"});
+  menu->on_select([top](Menu* m, Text* t) {
+    if (t->get_text() != "ОТМЕНА ОПЕРАЦИИ") {
+      top->on_after(std::bind(&Object::remove, top, m));
+      top->on_after(std::bind(count, top, t->get_text(), [](RESOURCE r, int a) {
+							   pragma.player_sold(r, a);
+							 }));
+    } else {
+      top->on_after(std::bind(&Object::remove, top, m));
+    }
+  });
+}
+
 
 void trade(Object* top) {
   Menu* menu = new Menu(top, 0, 400, 20, "Trade", {"ОТМЕНА ОПЕРАЦИИ", "Продать", "Купить"});
@@ -57,6 +74,9 @@ void trade(Object* top) {
     if (t->get_text() == "Купить") {
       top->on_after(std::bind(&Object::remove, top, m));
       top->on_after(std::bind(buy, top));
+    } else if (t->get_text() == "Продать") {
+      top->on_after(std::bind(&Object::remove, top, m));
+      top->on_after(std::bind(sell, top));
     } else {
       top->on_after(std::bind(&Object::remove, top, m));
     }
@@ -90,11 +110,16 @@ int main(int , char**) {
     top->on_after(std::bind(trade, top));
   });
 
+  Text* acting_player = new Text(top, 0, 24, 20, "ACTING_PLAYER",
+				 "Acting player: " + game::PLAYER_to_str[pragma.get_acting_player()],
+				 data_dir.filePath("Times New Roman Cyr.ttf"),
+				 24, {120, 120, 120, 0});
+
   Image* hourglass = new Image(top, 400 - 64, 400, 20, "Hourglass", 
 			       data_dir.filePath("hourglass.png"));
-  hourglass->on_mouse_button_up([](Sprite*, const SDL_Event&) {
-    qDebug() << "player made move";
+  hourglass->on_mouse_button_up([acting_player](Sprite*, const SDL_Event&) {
     pragma.player_made_move();
+    acting_player->set_text("Acting player:" + game::PLAYER_to_str[pragma.get_acting_player()]);
   });
 
   top->render(renderer);

@@ -2,10 +2,6 @@
 
 using namespace game;
 
-static const QString RESOURCE_to_str[] = {"GAS", "GOLD", "METAL", "MONEY"};
-
-static const QString PLAYER_to_str[] = {"A", "B", "C", "ME"};
-
 QString resources_to_string(Resources resources) {
   QString str;
   for (auto it : resources)
@@ -23,11 +19,11 @@ Game::Game() {
   resources.insert({GAS, 5});
   resources.insert({OIL, 6});
   resources.insert({METAL, 7});
-  //init after queue
-  after.insert({ME, A});
-  after.insert({A, B});
-  after.insert({B, C});
-  after.insert({C, ME});
+  //init players turn
+  players_turn.insert({ME, A});
+  players_turn.insert({A, B});
+  players_turn.insert({B, C});
+  players_turn.insert({C, ME});
 }
 
 Game* Game::player_bought(RESOURCE resource, int amount) {
@@ -39,8 +35,12 @@ Game* Game::player_sold(RESOURCE resource, int amount) {
 }
 
 Game* Game::player_made_move() {
-  current_one = after[current_one];
+  acting_player = players_turn[acting_player];
   return this;
+}
+
+PLAYER Game::get_acting_player() {
+  return acting_player;
 }
 
 QString Game::to_string() {
@@ -51,8 +51,8 @@ QString Game::to_string() {
 }
 
 Game* Game::player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
-  players[current_one][x] -= x_amount;
-  players[current_one][y] += y_amount;
+  players[acting_player][x] -= x_amount;
+  players[acting_player][y] += y_amount;
   return this;
 }
 
