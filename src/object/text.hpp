@@ -1,6 +1,8 @@
 #ifndef __TEXT_H
 #define __TEXT_H
 
+#include <SDL2/SDL_ttf.h>
+
 #include "primitive/sprite.hpp"
 
 namespace object {

@@ -8,7 +8,6 @@
 #include <QString>
 
 #include <SDL2/SDL.h>
-#include <SDL/SDL_ttf.h>
 
 namespace object {
   class Object {

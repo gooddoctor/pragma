@@ -110,16 +110,16 @@ int main(int , char**) {
     top->on_after(std::bind(trade, top));
   });
 
-  Text* acting_player = new Text(top, 0, 24, 20, "ACTING_PLAYER",
-				 "Acting player: " + game::PLAYER_to_str[pragma.get_acting_player()],
+  Text* active_player = new Text(top, 0, 24, 20, "ACTIVE_PLAYER",
+				 "Active player: " + game::PLAYER_to_str[pragma.get_active_player()],
 				 data_dir.filePath("Times New Roman Cyr.ttf"),
 				 24, {120, 120, 120, 0});
 
   Image* hourglass = new Image(top, 400 - 64, 400, 20, "Hourglass", 
 			       data_dir.filePath("hourglass.png"));
-  hourglass->on_mouse_button_up([acting_player](Sprite*, const SDL_Event&) {
+  hourglass->on_mouse_button_up([active_player](Sprite*, const SDL_Event&) {
     pragma.player_made_move();
-    acting_player->set_text("Acting player:" + game::PLAYER_to_str[pragma.get_acting_player()]);
+    active_player->set_text("Active player:" + game::PLAYER_to_str[pragma.get_active_player()]);
   });
 
   top->render(renderer);

@@ -35,12 +35,12 @@ Game* Game::player_sold(RESOURCE resource, int amount) {
 }
 
 Game* Game::player_made_move() {
-  acting_player = players_turn[acting_player];
+  active_player = players_turn[active_player];
   return this;
 }
 
-PLAYER Game::get_acting_player() {
-  return acting_player;
+PLAYER Game::get_active_player() {
+  return active_player;
 }
 
 QString Game::to_string() {
@@ -51,8 +51,8 @@ QString Game::to_string() {
 }
 
 Game* Game::player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
-  players[acting_player][x] -= x_amount;
-  players[acting_player][y] += y_amount;
+  players[active_player][x] -= x_amount;
+  players[active_player][y] += y_amount;
   return this;
 }
 

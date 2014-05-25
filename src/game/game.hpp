@@ -22,7 +22,7 @@ namespace game {
     Game* player_bought(RESOURCE resource, int amount);
     Game* player_sold(RESOURCE resource, int amount);
     Game* player_made_move();
-    PLAYER get_acting_player();
+    PLAYER get_active_player();
     QString to_string();
   private:
     Game* player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount);
@@ -30,7 +30,7 @@ namespace game {
     Resources resources;
     Players players;
     Turn players_turn;
-    PLAYER acting_player = ME;
+    PLAYER active_player = ME;
   };
 }
 
