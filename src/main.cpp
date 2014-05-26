@@ -119,12 +119,17 @@ int main(int , char**) {
 			       data_dir.filePath("hourglass.png"));
   hourglass->on_mouse_button_up([active_player](Sprite*, const SDL_Event&) {
     pragma.player_made_move();
+  });
+
+  pragma.on_player_made_move([active_player]() {
     active_player->set_text("Active player:" + game::PLAYER_to_str[pragma.get_active_player()]);
   });
 
   top->render(renderer);
   SDL_RenderPresent(renderer);
   
+  std::map<PLAYER, Player> players{{A, Player()}, {B, Player()}, {C, Player()}};
+
   SDL_Event event;
   while (true) {
     while (SDL_PollEvent(&event)) {
@@ -133,6 +138,8 @@ int main(int , char**) {
 	return -1;
 	break;
       default:
+	if (pragma.get_active_player() != ME)
+	  players[pragma.get_active_player()].make_move(pragma);
 	top->event(event);
 	top->after();
 	SDL_SetRenderDrawColor(renderer, 0,0,0,255);

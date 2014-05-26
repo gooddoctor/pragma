@@ -16,21 +16,29 @@ namespace game {
   typedef std::map<PLAYER, Resources> Players;
 
   class Game {
+  typedef std::function<void(void)> Callback;
   typedef std::map<PLAYER, PLAYER> Turn;
   public:
     Game();
+    PLAYER get_active_player();
     Game* player_bought(RESOURCE resource, int amount);
     Game* player_sold(RESOURCE resource, int amount);
     Game* player_made_move();
-    PLAYER get_active_player();
+    Game* on_player_made_move(const Callback& callback);
     QString to_string();
   private:
     Game* player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount);
   private:
+    PLAYER active_player = ME;
     Resources resources;
     Players players;
     Turn players_turn;
-    PLAYER active_player = ME;
+    std::vector<Callback> player_made_move_callbacks;
+  };
+
+  class Player {
+  public:
+    Player* make_move(game::Game& game);
   };
 }
 
