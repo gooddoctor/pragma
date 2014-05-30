@@ -2,23 +2,27 @@
 
 using namespace game;
 
-QString resources_to_string(Resources resources) {
+QString resource_to_string(Resource resource) {
   QString str;
-  for (auto it : resources)
+  for (auto it : resource)
     str.append(QString("(%1:%2)").arg(RESOURCE_to_str[it.first]).arg(it.second));
   return str;
 }
 
+int get_new_price(RESOURCE x, int current_price) {
+  return current_price + 2;
+}
+
 Game::Game() {
-  //init players
-  players.insert({A, Resources{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
-  players.insert({B, Resources{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
-  players.insert({C, Resources{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
-  players.insert({ME, Resources{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
-  //init resources
-  resources.insert({GAS, 5});
-  resources.insert({OIL, 6});
-  resources.insert({METAL, 7});
+  //init players_resource
+  players_resource.insert({A, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
+  players_resource.insert({B, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
+  players_resource.insert({C, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
+  players_resource.insert({ME, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
+  //init resource
+  resource.insert({GAS, 5});
+  resource.insert({OIL, 6});
+  resource.insert({METAL, 7});
   //init players turn
   players_turn.insert({ME, A});
   players_turn.insert({A, B});
@@ -30,12 +34,20 @@ PLAYER Game::get_active_player() {
   return active_player;
 }
 
-Game* Game::player_bought(RESOURCE resource, int amount) {
-  return player_trade(MONEY, resources[resource] * amount, resource, amount);
+Resource Game::get_resource() {
+  return resource;
 }
 
-Game* Game::player_sold(RESOURCE resource, int amount) {
-  return player_trade(resource, amount, MONEY, resources[resource] * amount);
+Resource Game::get_player_resource(PLAYER player) {
+  return players_resource[player];
+}
+
+Game* Game::player_bought(RESOURCE x, int amount) {
+  return player_trade(MONEY, resource[x] * amount, x, amount);
+}
+
+Game* Game::player_sold(RESOURCE x, int amount) {
+  return player_trade(x, amount, MONEY, resource[x] * amount);
 }
 
 Game* Game::player_made_move() {
@@ -51,19 +63,33 @@ Game* Game::on_player_made_move(const Callback& callback) {
 
 QString Game::to_string() {
   QString str;
-  for (auto it : players)
-    str.append(QString("%1:%2\n").arg(PLAYER_to_str[it.first]).arg(resources_to_string(it.second)));
+  for (auto it : players_resource)
+    str.append(QString("%1:%2\n").arg(PLAYER_to_str[it.first]).arg(resource_to_string(it.second)));
   return str;
 }
 
 Game* Game::player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
-  players[active_player][x] -= x_amount;
-  players[active_player][y] += y_amount;
+  players_resource[active_player][x] -= x_amount;
+  players_resource[active_player][y] += y_amount;
   return this;
 }
 
 Player* Player::make_move(game::Game& game) {
-  game.player_bought(RESOURCE::GAS, 5);
+  switch (state) {
+    case BOUGHT: {
+      int money = game.get_player_resource(game.get_active_player())[MONEY];
+      int gas_price = game.get_resource()[GAS];
+      int gas_amount = money / gas_price;
+      game.player_bought(GAS, gas_amount);
+      state = SOLD;
+      break;
+    } case SOLD: {
+      int gas_amount = game.get_player_resource(game.get_active_player())[GAS];
+      game.player_sold(GAS, gas_amount);
+      state = BOUGHT;
+      break;
+    }
+  }
   game.player_made_move();
   return this;
 }

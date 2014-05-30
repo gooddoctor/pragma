@@ -12,8 +12,8 @@ namespace game {
   enum PLAYER {A, B, C, ME};
   static const QString PLAYER_to_str[] = {"A", "B", "C", "ME"};
 
-  typedef std::map<RESOURCE, int> Resources;
-  typedef std::map<PLAYER, Resources> Players;
+  typedef std::map<RESOURCE, int> Resource;
+  typedef std::map<PLAYER, Resource> PlayersResource;
 
   class Game {
   typedef std::function<void(void)> Callback;
@@ -21,6 +21,8 @@ namespace game {
   public:
     Game();
     PLAYER get_active_player();
+    Resource get_resource();
+    Resource get_player_resource(PLAYER player);
     Game* player_bought(RESOURCE resource, int amount);
     Game* player_sold(RESOURCE resource, int amount);
     Game* player_made_move();
@@ -30,8 +32,8 @@ namespace game {
     Game* player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount);
   private:
     PLAYER active_player = ME;
-    Resources resources;
-    Players players;
+    Resource resource;
+    PlayersResource players_resource;
     Turn players_turn;
     std::vector<Callback> player_made_move_callbacks;
   };
@@ -39,6 +41,8 @@ namespace game {
   class Player {
   public:
     Player* make_move(game::Game& game);
+  private:
+    enum State {BOUGHT, SOLD} state = BOUGHT;
   };
 }
 
