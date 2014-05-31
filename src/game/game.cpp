@@ -52,7 +52,12 @@ Game* Game::player_sold(RESOURCE x, int amount) {
 
 Game* Game::player_made_move() {
   active_player = players_turn[active_player];
+  //notify about move
   for (auto it : player_made_move_callbacks) it();
+  //if last player is moved let economic works
+  total_moves++;
+  if ((total_moves %4) == 0)
+    for (auto& it : resource) it.second = get_new_price(it.first, it.second);
   return this;
 }
 

@@ -16,26 +16,40 @@ Game pragma;
 
 QDir data_dir("resource/");
 
+Image* arrow;
+
 void count(Object* top, QString text, std::function<void(RESOURCE, int)> action) {
-  Spin* spin = new Spin(top, 32, 400, 20, "count");
-  Image* up = new Image(top, 0, 400 - 32 - 4, 20, "up", data_dir.filePath("thumb_up.png"));
-  Image* down = new Image(top, 0, 400, 20, "down", data_dir.filePath("thumb_down.png"));
-  up->on_mouse_button_up([top, spin, up, down, text, action](Sprite*, const SDL_Event&) {
+  Spin* spin = new Spin(top, 0, 400, 20, "count");
+  Image* approved = new Image(top, 0, 400 - 60, 20, "approved", data_dir.filePath("approved.png"));
+  Image* denied = new Image(top, 64 + 2, 400 - 60, 20, "denied", data_dir.filePath("denied.png"));
+  approved->on_mouse_button_up([top, spin, approved, denied, text, action](Sprite*, const SDL_Event&) {
      top->on_after(std::bind(&Object::remove, top, spin));
-     top->on_after(std::bind(&Object::remove, top, up));
-     top->on_after(std::bind(&Object::remove, top, down));
+     top->on_after(std::bind(&Object::remove, top, approved));
+     top->on_after(std::bind(&Object::remove, top, denied));
      if (text == "GAS")
        action(game::RESOURCE::GAS, spin->val());
      else if (text == "OIL")
        action(game::RESOURCE::OIL, spin->val());
      else if (text == "METAL")
        action(game::RESOURCE::METAL, spin->val());
+     arrow->hide();
      qDebug() << pragma.to_string();
   });
-  down->on_mouse_button_up([top, spin, up, down, text](Sprite*, const SDL_Event&) {
+  approved->on_mouse_motion([](Sprite* s, const SDL_Event&) {
+    arrow->show();
+    arrow->set_x(s->get_x() + (s->w() - arrow->w()) / 2);
+    arrow->set_y(s->get_y() - s->h());
+  });
+  denied->on_mouse_button_up([top, spin, approved, denied, text](Sprite*, const SDL_Event&) {
     top->on_after(std::bind(&Object::remove, top, spin));
-    top->on_after(std::bind(&Object::remove, top, up));
-    top->on_after(std::bind(&Object::remove, top, down));
+    top->on_after(std::bind(&Object::remove, top, approved));
+    top->on_after(std::bind(&Object::remove, top, denied));
+    arrow->hide();
+  });
+  denied->on_mouse_motion([](Sprite* s, const SDL_Event&) {
+    arrow->show();
+    arrow->set_x(s->get_x() + (s->w() - arrow->w()) / 2);
+    arrow->set_y(s->get_y() - s->h());
   });
 }
 
@@ -98,6 +112,9 @@ int main(int , char**) {
   TTF_Init();
 
   Object* top = new Object(nullptr, -1, -1, -1, "TOP");
+
+  arrow = new Image(top, 0, 0, 30, "arrow_down", data_dir.filePath("arrow_down.png"));
+  arrow->hide();
 
   std::vector<TMXObject> objects = LayerParser::comming_in_fast().parse(tmx);
   for (auto it = objects.begin(); it != objects.end(); it++) {

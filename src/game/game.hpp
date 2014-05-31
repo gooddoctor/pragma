@@ -32,6 +32,7 @@ namespace game {
     Game* player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount);
   private:
     PLAYER active_player = ME;
+    int total_moves = 0;
     Resource resource;
     PlayersResource players_resource;
     Turn players_turn;
