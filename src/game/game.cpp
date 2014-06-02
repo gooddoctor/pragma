@@ -80,6 +80,10 @@ Game* Game::player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
 }
 
 Player* Player::make_move(game::Game& game) {
+  //think a little bit
+  if (!is_think_enough())
+    return this;
+  //make move
   switch (state) {
     case BOUGHT: {
       int money = game.get_player_resource(game.get_active_player())[MONEY];
@@ -98,3 +102,7 @@ Player* Player::make_move(game::Game& game) {
   game.player_made_move();
   return this;
 }
+
+bool Player::is_think_enough() {
+  return ((++think_time % 60) == 0) ? true : false;
+} 

@@ -43,7 +43,10 @@ namespace game {
   public:
     Player* make_move(game::Game& game);
   private:
+    bool is_think_enough();
+  private:
     enum State {BOUGHT, SOLD} state = BOUGHT;
+    int think_time = 0;
   };
 }
 
