@@ -19,8 +19,14 @@ Game pragma;
 QDir resource_dir("resource/");
 std::map<PLAYER, Player> players{{A, Player()}, {B, Player()}, {C, Player()}};
 Object* top = 0;
-Text* active_player = 0;
+
+Text* gas = 0;
+Text* oil = 0;
+Text* metal = 0;
+Text* money = 0;
+
 Image* user_choice = 0;
+Image* selected = 0;
 
 //global variable
 bool is_running = true;
@@ -110,10 +116,6 @@ int main(int, char**) {
 
   //object part
   top = new Object(nullptr, -1, -1, -1, "TOP");
-  active_player = new Text(top, 0, 24, 20, "ACTIVE_PLAYER",
-			   "Active player: " + game::PLAYER_to_str[pragma.get_active_player()],
-			    resource_dir.filePath("Times New Roman Cyr.ttf"),
-			    24, {120, 120, 120, 0});
   user_choice = new Image(top, 0, 0, 30, "arrow_down", resource_dir.filePath("arrow_down.png"));
   user_choice->hide();
   for (auto it : LayerParser::comming_in_fast().parse(tmx))
@@ -132,12 +134,51 @@ int main(int, char**) {
   hourglass->on_mouse_button_up([](Sprite*, const SDL_Event&) {
     pragma.player_made_move();
   });
-  
+
+  gas = new Text(top, 16 + 2, 15, 20, "GAS", QString::number(pragma.get_player_resource(ME)[GAS]),
+		 resource_dir.filePath("Times New Roman Cyr.ttf"), 12, {255, 0, 0, 0});
+  Image* gas_icon = new Image(top, 0, 16, 20, "GAS_ICON", resource_dir.filePath("gas.png"));
+
+  oil = new Text(top, 100, 15, 20, "OIL", QString::number(pragma.get_player_resource(ME)[OIL]),
+		 resource_dir.filePath("Times New Roman Cyr.ttf"), 12, {255, 0, 0, 0});
+  Image* oil_icon = new Image(top, 100 - 16 - 2, 16, 20, "OIL_ICON",
+			      resource_dir.filePath("oil.png"));
+
+  metal = new Text(top, 200, 15, 20, "METAL", QString::number(pragma.get_player_resource(ME)[METAL]),
+		   resource_dir.filePath("Times New Roman Cyr.ttf"), 12, {255, 0, 0, 0});
+  Image* metal_icon = new Image(top, 200 - 16 - 2, 16, 20, "METAL_ICON",
+				resource_dir.filePath("metal.png"));
+
+  money = new Text(top, 300, 16, 20, "MONEY", QString::number(pragma.get_player_resource(ME)[MONEY]),
+		   resource_dir.filePath("Times New Roman Cyr.ttf"), 12, {255, 0, 0, 0});  
+  Image* money_icon = new Image(top, 300 - 16, 16, 20, "MONEY_ICON",
+				resource_dir.filePath("money.png"));
+
+  selected = new Image(top, 0, 464, 25, "selected", resource_dir.filePath("select.png"));
+
   //callback parts
   pragma.on_player_made_move([]() {
-    active_player->set_text("Active player:" + game::PLAYER_to_str[pragma.get_active_player()]);
+    switch (pragma.get_active_player()) {
+      case A:
+	selected->set_x(0);
+	break;
+      case B:
+	selected->set_x(64);
+	break;
+      case C:
+	selected->set_x(64 + 64);
+	break;
+      case ME:
+	selected->set_x(64 + 64 + 64);
+	break;
+    }
   });
-
+  pragma.on_player_trade([]() {
+    gas->set_text(QString::number(pragma.get_player_resource(ME)[GAS])),
+    oil->set_text(QString::number(pragma.get_player_resource(ME)[OIL]));
+    metal->set_text(QString::number(pragma.get_player_resource(ME)[METAL]));
+    money->set_text(QString::number(pragma.get_player_resource(ME)[MONEY]));
+  });
   //main cycle part
   while (is_running) {
     Uint32 start = SDL_GetTicks();

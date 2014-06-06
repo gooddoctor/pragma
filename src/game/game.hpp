@@ -27,6 +27,7 @@ namespace game {
     Game* player_sold(RESOURCE resource, int amount);
     Game* player_made_move();
     Game* on_player_made_move(const Callback& callback);
+    Game* on_player_trade(const Callback& callback);
     QString to_string();
   private:
     Game* player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount);
@@ -37,6 +38,7 @@ namespace game {
     PlayersResource players_resource;
     Turn players_turn;
     std::vector<Callback> player_made_move_callbacks;
+    std::vector<Callback> player_trade_callbacks;
   };
 
   class Player {

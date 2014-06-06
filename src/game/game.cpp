@@ -61,6 +61,11 @@ Game* Game::player_made_move() {
   return this;
 }
 
+Game* Game::on_player_trade(const Callback& callback) {
+  player_trade_callbacks.push_back(callback);
+  return this;
+}
+
 Game* Game::on_player_made_move(const Callback& callback) {
   player_made_move_callbacks.push_back(callback);
   return this;
@@ -74,8 +79,10 @@ QString Game::to_string() {
 }
 
 Game* Game::player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
+  //trade and notify about it
   players_resource[active_player][x] -= x_amount;
   players_resource[active_player][y] += y_amount;
+  for (auto it : player_trade_callbacks) it();
   return this;
 }
 
