@@ -67,6 +67,33 @@ void count(QString text, std::function<void(RESOURCE, int)> action) {
   });
 }
 
+void who(int amount) {
+  Menu* menu = new Menu(top, 0, 400, 20, "Buy", {"ОТМЕНА ОПЕРАЦИИ", "A", "B", "C"});
+  menu->on_select([amount](Menu* m, Text* t) {
+    top->on_after(std::bind(&Object::remove, top, m));
+    if (t->get_text() == "A")
+      pragma.player_killed(A, amount);
+    else if (t->get_text() == "B")
+      pragma.player_killed(B, amount);
+    else if (t->get_text() == "C")
+      pragma.player_killed(C, amount);
+  });
+}
+
+void kill() {
+  Spin* spin = new Spin(top, 0, 400, 25, "count");
+  Image* approved = new Image(top, 0, 400 - 60, 20, "approved", 
+			      resource_dir.filePath("approved.png"));
+  Image* denied = new Image(top, 64 + 2, 400 - 60, 20, "denied", 
+			    resource_dir.filePath("denied.png"));
+  approved->on_mouse_button_up([spin, approved, denied](Sprite*, const SDL_Event&) {
+    top->on_after(std::bind(&Object::remove, top, spin));
+    top->on_after(std::bind(&Object::remove, top, approved));
+    top->on_after(std::bind(&Object::remove, top, denied));
+    top->on_after(std::bind(who, spin->val()));
+  });
+}
+
 void buy() {
   Menu* menu = new Menu(top, 0, 400, 20, "Buy", {"ОТМЕНА ОПЕРАЦИИ", "GAS", "OIL", "METAL"});
   menu->on_select([](Menu* m, Text* t) {
@@ -90,13 +117,16 @@ void sell() {
 }
 
 void trade() {
-  Menu* menu = new Menu(top, 0, 400, 20, "trade", {"ОТМЕНА ОПЕРАЦИИ", "Продать", "Купить"});
+  Menu* menu = new Menu(top, 0, 400, 20, "trade", {"ОТМЕНА ОПЕРАЦИИ", "Продать", "Купить",
+						   "УБИТЬ"});
   menu->on_select([](Menu* m, Text* t) { 
     top->on_after(std::bind(&Object::remove, top, m));
     if (t->get_text() == "Купить")
       top->on_after(buy);
     else if (t->get_text() == "Продать")
       top->on_after(sell);
+    else if (t->get_text() == "УБИТЬ")
+      top->on_after(kill);
   });
 }
 

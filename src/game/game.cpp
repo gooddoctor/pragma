@@ -28,6 +28,11 @@ Game::Game() {
   players_turn.insert({A, B});
   players_turn.insert({B, C});
   players_turn.insert({C, ME});
+  //init restrictions
+  players_restriction.insert({A, Restriction{}});
+  players_restriction.insert({B, Restriction{}});
+  players_restriction.insert({C, Restriction{}});
+  players_restriction.insert({ME, Restriction{}});
 }
 
 PLAYER Game::get_active_player() {
@@ -48,6 +53,26 @@ Game* Game::player_bought(RESOURCE x, int amount) {
 
 Game* Game::player_sold(RESOURCE x, int amount) {
   return player_trade(x, amount, MONEY, resource[x] * amount);
+}
+
+Game* Game::player_killed(PLAYER victim, int amount) {
+  players_restriction[victim].insert({KILL, amount});
+  return this;
+}
+
+bool Game::player_remove_kill_restriction(int amount) {
+  auto it = players_restriction[get_active_player()].find(KILL);
+  int blood_money = it->second;
+  if (amount > blood_money) {
+    players_restriction[get_active_player()].erase(it);
+    player_trade(MONEY, amount, MONEY, 0); // MONEY - AMOUNT : MONEY + 0
+    return true;
+  }
+  return false;
+}
+
+bool Game::is_player_on_restriction(PLAYER player, RESTRICTION restriction) {
+  return players_restriction[player].find(restriction) != players_restriction[player].end();
 }
 
 Game* Game::player_made_move() {
@@ -90,6 +115,11 @@ Player* Player::make_move(game::Game& game) {
   //think a little bit
   if (!is_think_enough())
     return this;
+  //if we got killed
+  if (game.is_player_on_restriction(game.get_active_player(), KILL)) {
+    game.player_remove_kill_restriction(game.get_player_resource(game.get_active_player())[MONEY] - 1);
+    return this;
+  }
   //make move
   switch (state) {
     case BOUGHT: {
