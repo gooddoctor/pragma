@@ -72,11 +72,24 @@ void who(int amount) {
   menu->on_select([amount](Menu* m, Text* t) {
     top->on_after(std::bind(&Object::remove, top, m));
     if (t->get_text() == "A")
-      pragma.player_killed(A, amount);
+      pragma.kill(A, amount);
     else if (t->get_text() == "B")
-      pragma.player_killed(B, amount);
+      pragma.kill(B, amount);
     else if (t->get_text() == "C")
-      pragma.player_killed(C, amount);
+      pragma.kill(C, amount);
+  });
+}
+
+void who_2(int amount) {
+  Menu* menu = new Menu(top, 0, 400, 20, "ROB", {"ОТМЕНА ОПЕРАЦИИ", "A", "B", "C"});
+  menu->on_select([amount](Menu* m, Text* t) {
+    top->on_after(std::bind(&Object::remove, top, m));
+    if (t->get_text() == "A")
+      pragma.rob(A, amount);
+    else if (t->get_text() == "B")
+      pragma.rob(B, amount);
+    else if (t->get_text() == "C")
+      pragma.rob(C, amount);
   });
 }
 
@@ -94,13 +107,28 @@ void kill() {
   });
 }
 
+
+void rob() {
+  Spin* spin = new Spin(top, 0, 400, 25, "count");
+  Image* approved = new Image(top, 0, 400 - 60, 20, "approved", 
+			      resource_dir.filePath("approved.png"));
+  Image* denied = new Image(top, 64 + 2, 400 - 60, 20, "denied", 
+			    resource_dir.filePath("denied.png"));
+  approved->on_mouse_button_up([spin, approved, denied](Sprite*, const SDL_Event&) {
+    top->on_after(std::bind(&Object::remove, top, spin));
+    top->on_after(std::bind(&Object::remove, top, approved));
+    top->on_after(std::bind(&Object::remove, top, denied));
+      top->on_after(std::bind(who_2, spin->val()));
+    });
+  }
+
 void buy() {
   Menu* menu = new Menu(top, 0, 400, 20, "Buy", {"ОТМЕНА ОПЕРАЦИИ", "GAS", "OIL", "METAL"});
   menu->on_select([](Menu* m, Text* t) {
     top->on_after(std::bind(&Object::remove, top, m));
     if (t->get_text() != "ОТМЕНА ОПЕРАЦИИ")
       top->on_after(std::bind(count, t->get_text(), [](RESOURCE r, int a) {
-	pragma.player_bought(r, a);
+	pragma.bought(r, a);
       }));
   });
 }
@@ -111,14 +139,14 @@ void sell() {
     top->on_after(std::bind(&Object::remove, top, m));
     if (t->get_text() != "ОТМЕНА ОПЕРАЦИИ")
       top->on_after(std::bind(count, t->get_text(), [](RESOURCE r, int a) {
-	pragma.player_sold(r, a);
+	pragma.sold(r, a);
       }));
   });
 }
 
 void trade() {
   Menu* menu = new Menu(top, 0, 400, 20, "trade", {"ОТМЕНА ОПЕРАЦИИ", "Продать", "Купить",
-						   "УБИТЬ"});
+						   "УБИТЬ", "ОГРАБИТЬ"});
   menu->on_select([](Menu* m, Text* t) { 
     top->on_after(std::bind(&Object::remove, top, m));
     if (t->get_text() == "Купить")
@@ -127,6 +155,8 @@ void trade() {
       top->on_after(sell);
     else if (t->get_text() == "УБИТЬ")
       top->on_after(kill);
+    else if (t->get_text() == "ОГРАБИТЬ")
+      top->on_after(rob);
   });
 }
 
@@ -162,7 +192,7 @@ int main(int, char**) {
   Image* hourglass = new Image(top, 400 - 64, 464, 20, "Hourglass", 
 			       resource_dir.filePath("hourglass.png"));
   hourglass->on_mouse_button_up([](Sprite*, const SDL_Event&) {
-    pragma.player_made_move();
+    pragma.made_move();
   });
 
   gas = new Text(top, 16 + 2, 15, 20, "GAS", QString::number(pragma.get_player_resource(ME)[GAS]),
@@ -187,7 +217,7 @@ int main(int, char**) {
   selected = new Image(top, 0, 464, 25, "selected", resource_dir.filePath("select.png"));
 
   //callback parts
-  pragma.on_player_made_move([]() {
+  pragma.on_made_move([]() {
     switch (pragma.get_active_player()) {
       case A:
 	selected->set_x(0);
@@ -203,7 +233,7 @@ int main(int, char**) {
 	break;
     }
   });
-  pragma.on_player_trade([]() {
+  pragma.on_trade([]() {
     gas->set_text(QString::number(pragma.get_player_resource(ME)[GAS])),
     oil->set_text(QString::number(pragma.get_player_resource(ME)[OIL]));
     metal->set_text(QString::number(pragma.get_player_resource(ME)[METAL]));

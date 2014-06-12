@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "game.hpp"
 
 using namespace game;
@@ -47,38 +49,59 @@ Resource Game::get_player_resource(PLAYER player) {
   return players_resource[player];
 }
 
-Game* Game::player_bought(RESOURCE x, int amount) {
-  return player_trade(MONEY, resource[x] * amount, x, amount);
+int Game::get_player_resource(RESOURCE x) {
+  return get_player_resource(active_player)[x];
 }
 
-Game* Game::player_sold(RESOURCE x, int amount) {
-  return player_trade(x, amount, MONEY, resource[x] * amount);
+Game* Game::bought(RESOURCE x, int amount) {
+  return trade(MONEY, resource[x] * amount, x, amount);
 }
 
-Game* Game::player_killed(PLAYER victim, int amount) {
+Game* Game::sold(RESOURCE x, int amount) {
+  return trade(x, amount, MONEY, resource[x] * amount);
+}
+
+Game* Game::kill(PLAYER victim, int amount) {
   players_restriction[victim].insert({KILL, amount});
   return this;
 }
 
-bool Game::player_remove_kill_restriction(int amount) {
-  auto it = players_restriction[get_active_player()].find(KILL);
+Game* Game::rob(PLAYER victim, int amount) {
+  players_restriction[victim].insert({ROB, amount});
+  return this;
+}
+
+bool Game::remove_kill_restriction(int amount) {
+  auto it = players_restriction[active_player].find(KILL);
   int blood_money = it->second;
   if (amount > blood_money) {
-    players_restriction[get_active_player()].erase(it);
-    player_trade(MONEY, amount, MONEY, 0); // MONEY - AMOUNT : MONEY + 0
+    players_restriction[active_player].erase(it);
+    trade(MONEY, amount, MONEY, 0); // MONEY - AMOUNT
     return true;
   }
   return false;
 }
 
-bool Game::is_player_on_restriction(PLAYER player, RESTRICTION restriction) {
+bool Game::remove_rob_restriction(int amount) {
+  auto it = players_restriction[active_player].find(ROB);
+  int blood_money = it->second;
+  players_restriction[active_player].erase(it);
+  trade(MONEY, std::abs(blood_money - amount), MONEY, 0); //MONEY - delta
+  return true;
+}
+
+bool Game::is_on_restriction(PLAYER player, RESTRICTION restriction) {
   return players_restriction[player].find(restriction) != players_restriction[player].end();
 }
 
-Game* Game::player_made_move() {
+bool Game::is_on_restriction(RESTRICTION restriction) {
+  return is_on_restriction(active_player, restriction);
+}
+
+Game* Game::made_move() {
   active_player = players_turn[active_player];
   //notify about move
-  for (auto it : player_made_move_callbacks) it();
+  for (auto it : made_move_callbacks) it();
   //if last player is moved let economic works
   total_moves++;
   if ((total_moves %4) == 0)
@@ -86,13 +109,13 @@ Game* Game::player_made_move() {
   return this;
 }
 
-Game* Game::on_player_trade(const Callback& callback) {
-  player_trade_callbacks.push_back(callback);
+Game* Game::on_trade(const Callback& callback) {
+  trade_callbacks.push_back(callback);
   return this;
 }
 
-Game* Game::on_player_made_move(const Callback& callback) {
-  player_made_move_callbacks.push_back(callback);
+Game* Game::on_made_move(const Callback& callback) {
+  made_move_callbacks.push_back(callback);
   return this;
 }
 
@@ -103,11 +126,11 @@ QString Game::to_string() {
   return str;
 }
 
-Game* Game::player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
+Game* Game::trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
   //trade and notify about it
   players_resource[active_player][x] -= x_amount;
   players_resource[active_player][y] += y_amount;
-  for (auto it : player_trade_callbacks) it();
+  for (auto it : trade_callbacks) it();
   return this;
 }
 
@@ -115,28 +138,37 @@ Player* Player::make_move(game::Game& game) {
   //think a little bit
   if (!is_think_enough())
     return this;
+  //show info
+  qDebug() << "before " << PLAYER_to_str[game.get_active_player()] << ":" 
+	   << game.get_player_resource(MONEY);
   //if we got killed
-  if (game.is_player_on_restriction(game.get_active_player(), KILL)) {
-    game.player_remove_kill_restriction(game.get_player_resource(game.get_active_player())[MONEY] - 1);
+  if (game.is_on_restriction(KILL)) {
+    game.remove_kill_restriction(game.get_player_resource(MONEY) - 1);
+    return this;
+  }
+  if (game.is_on_restriction(ROB)) {
+    game.remove_rob_restriction(game.get_player_resource(MONEY) - 1);
     return this;
   }
   //make move
   switch (state) {
     case BOUGHT: {
-      int money = game.get_player_resource(game.get_active_player())[MONEY];
+      int money = game.get_player_resource(MONEY);
       int gas_price = game.get_resource()[GAS];
       int gas_amount = money / gas_price;
-      game.player_bought(GAS, gas_amount);
+      game.bought(GAS, gas_amount);
       state = SOLD;
       break;
     } case SOLD: {
-      int gas_amount = game.get_player_resource(game.get_active_player())[GAS];
-      game.player_sold(GAS, gas_amount);
+      int gas_amount = game.get_player_resource(GAS);
+      game.sold(GAS, gas_amount);
       state = BOUGHT;
       break;
     }
   }
-  game.player_made_move();
+  qDebug() << "after " << PLAYER_to_str[game.get_active_player()] << ":" 
+	   << game.get_player_resource(MONEY);
+  game.made_move();
   return this;
 }
 

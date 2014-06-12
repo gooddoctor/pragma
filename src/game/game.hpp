@@ -29,17 +29,21 @@ namespace game {
     PLAYER get_active_player();
     Resource get_resource();
     Resource get_player_resource(PLAYER player);
-    Game* player_bought(RESOURCE resource, int amount);
-    Game* player_sold(RESOURCE resource, int amount);
-    Game* player_killed(PLAYER victim, int amount);
-    bool player_remove_kill_restriction(int amount);
-    bool is_player_on_restriction(PLAYER player, RESTRICTION restriction);
-    Game* player_made_move();
-    Game* on_player_made_move(const Callback& callback);
-    Game* on_player_trade(const Callback& callback);
+    int get_player_resource(RESOURCE resource);
+    Game* bought(RESOURCE resource, int amount);
+    Game* sold(RESOURCE resource, int amount);
+    Game* kill(PLAYER victim, int amount);
+    Game* rob(PLAYER victim, int amount);
+    bool remove_kill_restriction(int amount);
+    bool remove_rob_restriction(int amount);
+    bool is_on_restriction(PLAYER player, RESTRICTION restriction);
+    bool is_on_restriction(RESTRICTION restriction);
+    Game* made_move();
+    Game* on_made_move(const Callback& callback);
+    Game* on_trade(const Callback& callback);
     QString to_string();
   private:
-    Game* player_trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount);
+    Game* trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount);
   private:
     PLAYER active_player = ME;
     int total_moves = 0;
@@ -47,8 +51,8 @@ namespace game {
     PlayersResource players_resource;
     PlayersRestriction players_restriction;
     Turn players_turn;
-    std::vector<Callback> player_made_move_callbacks;
-    std::vector<Callback> player_trade_callbacks;
+    std::vector<Callback> made_move_callbacks;
+    std::vector<Callback> trade_callbacks;
   };
 
   class Player {
