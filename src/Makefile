@@ -49,9 +49,11 @@ SOURCES       = game/game.cpp \
 		object/primitive/base/object.cpp \
 		object/primitive/sprite.cpp \
 		object/image.cpp \
+		object/label.cpp \
 		object/menu.cpp \
 		object/spin.cpp \
 		object/text.cpp \
+		object/confirmation.cpp \
 		parser/layer_parser.cpp \
 		parser/tmx_parser.cpp \
 		main.cpp 
@@ -59,9 +61,11 @@ OBJECTS       = game.o \
 		object.o \
 		sprite.o \
 		image.o \
+		label.o \
 		menu.o \
 		spin.o \
 		text.o \
+		confirmation.o \
 		layer_parser.o \
 		tmx_parser.o \
 		main.o
@@ -180,9 +184,11 @@ DIST          = ../../../tools/Qt/5.3/gcc_64/mkspecs/features/spec_pre.prf \
 		object/primitive/base/object.cpp \
 		object/primitive/sprite.cpp \
 		object/image.cpp \
+		object/label.cpp \
 		object/menu.cpp \
 		object/spin.cpp \
 		object/text.cpp \
+		object/confirmation.cpp \
 		parser/layer_parser.cpp \
 		parser/tmx_parser.cpp \
 		main.cpp
@@ -456,7 +462,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/pragma1.0.0 || mkdir -p .tmp/pragma1.0.0
-	$(COPY_FILE) --parents $(DIST) .tmp/pragma1.0.0/ && $(COPY_FILE) --parents game/game.hpp object/primitive/base/object.hpp object/primitive/sprite.hpp object/image.hpp object/menu.hpp object/spin.hpp object/text.hpp parser/parser.hpp .tmp/pragma1.0.0/ && $(COPY_FILE) --parents game/game.cpp object/primitive/base/object.cpp object/primitive/sprite.cpp object/image.cpp object/menu.cpp object/spin.cpp object/text.cpp parser/layer_parser.cpp parser/tmx_parser.cpp main.cpp .tmp/pragma1.0.0/ && (cd `dirname .tmp/pragma1.0.0` && $(TAR) pragma1.0.0.tar pragma1.0.0 && $(COMPRESS) pragma1.0.0.tar) && $(MOVE) `dirname .tmp/pragma1.0.0`/pragma1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/pragma1.0.0
+	$(COPY_FILE) --parents $(DIST) .tmp/pragma1.0.0/ && $(COPY_FILE) --parents game/game.hpp object/primitive/base/object.hpp object/primitive/sprite.hpp object/image.hpp object/label.hpp object/menu.hpp object/spin.hpp object/text.hpp object/confirmation.hpp parser/parser.hpp .tmp/pragma1.0.0/ && $(COPY_FILE) --parents game/game.cpp object/primitive/base/object.cpp object/primitive/sprite.cpp object/image.cpp object/label.cpp object/menu.cpp object/spin.cpp object/text.cpp object/confirmation.cpp parser/layer_parser.cpp parser/tmx_parser.cpp main.cpp .tmp/pragma1.0.0/ && (cd `dirname .tmp/pragma1.0.0` && $(TAR) pragma1.0.0.tar pragma1.0.0 && $(COMPRESS) pragma1.0.0.tar) && $(MOVE) `dirname .tmp/pragma1.0.0`/pragma1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/pragma1.0.0
 
 
 clean:compiler_clean 
@@ -493,10 +499,9 @@ compiler_clean:
 
 ####### Compile
 
-game.o: game/game.cpp game/game.hpp \
-		../../../tools/Qt/5.3/gcc_64/include/QtCore/QString \
-		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstring.h \
-		../../../tools/Qt/5.3/gcc_64/include/QtCore/qchar.h \
+game.o: game/game.cpp ../../../tools/Qt/5.3/gcc_64/include/QtCore/QDebug \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qdebug.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qalgorithms.h \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qglobal.h \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qconfig.h \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qfeatures.h \
@@ -525,11 +530,43 @@ game.o: game/game.cpp game/game.hpp \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qglobalstatic.h \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qmutex.h \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qnumeric.h \
-		../../../tools/Qt/5.3/gcc_64/include/QtCore/qbytearray.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qhash.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qchar.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qiterator.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qlist.h \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qrefcount.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qpair.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qmap.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qtextstream.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qiodevice.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qobject.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qobjectdefs.h \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qnamespace.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstring.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qbytearray.h \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qarraydata.h \
-		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstringbuilder.h
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstringbuilder.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qcoreevent.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qscopedpointer.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qmetatype.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qvarlengtharray.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qcontainerfwd.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qisenum.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qobject_impl.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qlocale.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qvariant.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstringlist.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qdatastream.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qregexp.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstringmatcher.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qshareddata.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qvector.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qpoint.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qset.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qcontiguouscache.h \
+		game/game.hpp \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/QString
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o game.o game/game.cpp
 
 object.o: object/primitive/base/object.cpp object/primitive/base/object.hpp \
@@ -651,6 +688,49 @@ image.o: object/image.cpp object/image.hpp \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qarraydata.h \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstringbuilder.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o image.o object/image.cpp
+
+label.o: object/label.cpp object/label.hpp \
+		object/image.hpp \
+		object/primitive/sprite.hpp \
+		object/primitive/base/object.hpp \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/QString \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstring.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qchar.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qglobal.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qconfig.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qfeatures.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qsystemdetection.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qprocessordetection.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qcompilerdetection.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qtypeinfo.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qtypetraits.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qsysinfo.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qlogging.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qflags.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qbasicatomic.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qgenericatomic.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_msvc.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_armv7.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_armv6.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_armv5.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_ia64.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_mips.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_x86.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_cxx11.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_gcc.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_unix.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qmutex.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qnumeric.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qbytearray.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qrefcount.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qnamespace.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qarraydata.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstringbuilder.h \
+		object/text.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o label.o object/label.cpp
 
 menu.o: object/menu.cpp object/text.hpp \
 		object/primitive/sprite.hpp \
@@ -778,6 +858,48 @@ text.o: object/text.cpp object/text.hpp \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qarraydata.h \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstringbuilder.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o text.o object/text.cpp
+
+confirmation.o: object/confirmation.cpp object/confirmation.hpp \
+		object/image.hpp \
+		object/primitive/sprite.hpp \
+		object/primitive/base/object.hpp \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/QString \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstring.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qchar.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qglobal.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qconfig.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qfeatures.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qsystemdetection.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qprocessordetection.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qcompilerdetection.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qtypeinfo.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qtypetraits.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qsysinfo.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qlogging.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qflags.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qbasicatomic.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qgenericatomic.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_msvc.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_armv7.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_armv6.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_armv5.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_ia64.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_mips.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_x86.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_cxx11.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_gcc.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qatomic_unix.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qmutex.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qnumeric.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qbytearray.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qrefcount.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qnamespace.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qarraydata.h \
+		../../../tools/Qt/5.3/gcc_64/include/QtCore/qstringbuilder.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o confirmation.o object/confirmation.cpp
 
 layer_parser.o: parser/layer_parser.cpp parser/parser.hpp \
 		../../../tools/Qt/5.3/gcc_64/include/QtCore/QString \

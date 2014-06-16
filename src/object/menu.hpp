@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "image.hpp"
+#include "text.hpp"
 
 namespace object {
   class Menu : public Object {

@@ -6,7 +6,7 @@ using namespace object;
 
 Menu::Menu(Object* parent, int x, int y, int z, const QString& id, const StringList& entries) :
       Object(parent, x, y, z, id) {
-  hint = new Image(this, x, y, z, id, "object/resource/hint.png");
+  hint = new Image(this, x, y, z, id, "object/resource/menu_hint.png");
   hint->hide();
   set_entries(entries);
 }  

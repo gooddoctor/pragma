@@ -11,12 +11,16 @@ namespace object {
   public:
     Sprite(Object* parent, int x, int y, int z, const QString& id, const SurfaceLoader& loader);
     Sprite* render(SDL_Renderer* sdlrender) override;
+    Sprite* select();
+    Sprite* deselect();
     int h() override;
     int w() override;
     Sprite* on_mouse_button_up(const Callback& callback);
     Sprite* on_mouse_motion(const Callback& callback);
   private:
     Sprite* fire_callbacks(const std::vector<Callback>& callbacks, const SDL_Event& e);
+  private:
+    bool is_select = false;
   protected:
     Sprite* reload(const SurfaceLoader& loader);
     Sprite* mouse_button_up_handler(const SDL_Event& e) override;

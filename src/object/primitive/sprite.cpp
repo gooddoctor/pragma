@@ -13,6 +13,20 @@ Sprite* Sprite::render(SDL_Renderer* sdlrender) {
   SDL_Rect src = rect(0, 0, w(), h());
   SDL_Rect dst = rect(x, y - h(), w(), h());
   SDL_RenderCopyEx(sdlrender, texture.get(), &src, &dst, 0, NULL, SDL_FLIP_NONE);
+  if (is_select) {
+    SDL_SetRenderDrawColor(sdlrender, 255, 0, 0, 255);
+    SDL_RenderDrawRect(sdlrender, &dst);
+  }
+  return this;
+}
+
+Sprite* Sprite::select() {
+  is_select = true;
+  return this;
+}
+
+Sprite* Sprite::deselect() {
+  is_select = false;
   return this;
 }
 
