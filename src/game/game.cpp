@@ -50,6 +50,10 @@ Resource Game::get_resource() {
   return resource;
 }
 
+int Game::get_resource(RESOURCE x) {
+  return resource[x];
+}
+
 Resource Game::get_player_resource(PLAYER player) {
   return players_resource[player];
 }
@@ -84,6 +88,7 @@ bool Game::remove_kill_restriction(int amount) {
     trade(MONEY, amount, MONEY, 0); // MONEY - AMOUNT
     return true;
   }
+  players_restriction[active_player].insert({DEAD, 0});
   return false;
 }
 
@@ -140,13 +145,13 @@ Game* Game::trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
 }
 
 Player* Player::make_move(game::Game& game) {
-  //think a little bit
   if (!is_think_enough())
     return this;
-  //show info
-  qDebug() << "before " << PLAYER_to_str[game.get_active_player()] << ":" 
-	   << game.get_player_resource(MONEY);
-  //if we got killed
+  qDebug() << "before " << game.to_string();
+  if (game.is_on_restriction(DEAD)) {
+    game.made_move();
+    return this;
+  }
   if (game.is_on_restriction(KILL)) {
     game.remove_kill_restriction(random_piece(game.get_player_resource(MONEY), 30, 50));
     return this;
@@ -158,21 +163,21 @@ Player* Player::make_move(game::Game& game) {
   //make move
   switch (state) {
     case BOUGHT: {
-      int money = random_piece(game.get_player_resource(MONEY), 70, 70); //spend only 70%
-      int gas_price = game.get_resource()[GAS];
-      int gas_amount = money / gas_price;
-      game.bought(GAS, gas_amount);
+      int money = random_piece(game.get_player_resource(MONEY), 80, 80); //spend only 80%
+      game.bought(GAS, (money / 3) / game.get_resource(GAS));
+      game.bought(OIL, (money / 3) / game.get_resource(OIL));
+      game.bought(METAL, (money / 3) / game.get_resource(METAL));
       state = SOLD;
       break;
     } case SOLD: {
-      int gas_amount = game.get_player_resource(GAS);
-      game.sold(GAS, gas_amount);
+      game.sold(GAS, game.get_player_resource(GAS));
+      game.sold(OIL, game.get_player_resource(OIL));
+      game.sold(METAL, game.get_player_resource(METAL));
       state = BOUGHT;
       break;
     }
   }
-  qDebug() << "after " << PLAYER_to_str[game.get_active_player()] << ":" 
-	   << game.get_player_resource(MONEY);
+  qDebug() << "after " << game.to_string();
   game.made_move();
   return this;
 }

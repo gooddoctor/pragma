@@ -12,8 +12,8 @@ namespace game {
   enum PLAYER {A, B, C, ME};
   static const QString PLAYER_to_str[] = {"A", "B", "C", "ME"};
 
-  enum RESTRICTION {KILL, ROB};
-  static const QString RESTRICTION_to_str[] = {"KILL", "ROB"};
+  enum RESTRICTION {DEAD, KILL, ROB};
+  static const QString RESTRICTION_to_str[] = {"DEAD" "KILL", "ROB",};
 
   typedef std::map<RESOURCE, int> Resource;
   typedef std::map<PLAYER, Resource> PlayersResource;
@@ -28,10 +28,11 @@ namespace game {
     Game();
     PLAYER get_active_player();
     Resource get_resource();
+    int get_resource(RESOURCE x);
     Resource get_player_resource(PLAYER player);
-    int get_player_resource(RESOURCE resource);
-    Game* bought(RESOURCE resource, int amount);
-    Game* sold(RESOURCE resource, int amount);
+    int get_player_resource(RESOURCE x);
+    Game* bought(RESOURCE x, int amount);
+    Game* sold(RESOURCE x, int amount);
     Game* kill(PLAYER victim, int amount);
     Game* rob(PLAYER victim, int amount);
     bool remove_kill_restriction(int amount);
