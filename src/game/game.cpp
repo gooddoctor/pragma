@@ -15,6 +15,11 @@ int get_new_price(RESOURCE x, int current_price) {
   return current_price + 2;
 }
 
+int random_piece(int entire, int a, int b) {
+  double rnd = ((rand() % (b - a + 1)) + a) / 100.0;
+  return entire * rnd;
+}
+
 Game::Game() {
   //init players_resource
   players_resource.insert({A, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
@@ -143,17 +148,17 @@ Player* Player::make_move(game::Game& game) {
 	   << game.get_player_resource(MONEY);
   //if we got killed
   if (game.is_on_restriction(KILL)) {
-    game.remove_kill_restriction(game.get_player_resource(MONEY) - 1);
+    game.remove_kill_restriction(random_piece(game.get_player_resource(MONEY), 30, 50));
     return this;
   }
   if (game.is_on_restriction(ROB)) {
-    game.remove_rob_restriction(game.get_player_resource(MONEY) - 1);
+    game.remove_rob_restriction(random_piece(game.get_player_resource(MONEY), 10, 30));
     return this;
   }
   //make move
   switch (state) {
     case BOUGHT: {
-      int money = game.get_player_resource(MONEY);
+      int money = random_piece(game.get_player_resource(MONEY), 70, 70); //spend only 70%
       int gas_price = game.get_resource()[GAS];
       int gas_amount = money / gas_price;
       game.bought(GAS, gas_amount);
