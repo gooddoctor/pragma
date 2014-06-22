@@ -21,25 +21,7 @@ int random_piece(int entire, int a, int b) {
 }
 
 Game::Game() {
-  //init players_resource
-  players_resource.insert({A, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
-  players_resource.insert({B, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
-  players_resource.insert({C, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
-  players_resource.insert({ME, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
-  //init resource
-  resource.insert({GAS, 5});
-  resource.insert({OIL, 6});
-  resource.insert({METAL, 7});
-  //init players turn
-  players_turn.insert({ME, A});
-  players_turn.insert({A, B});
-  players_turn.insert({B, C});
-  players_turn.insert({C, ME});
-  //init restrictions
-  players_restriction.insert({A, Restriction{}});
-  players_restriction.insert({B, Restriction{}});
-  players_restriction.insert({C, Restriction{}});
-  players_restriction.insert({ME, Restriction{}});
+  reset();
 }
 
 PLAYER Game::get_active_player() {
@@ -110,12 +92,46 @@ bool Game::is_on_restriction(RESTRICTION restriction) {
 
 Game* Game::made_move() {
   active_player = players_turn[active_player];
-  //notify about move
-  for (auto it : made_move_callbacks) it();
+  fire_callbacks(made_move_callbacks);
   //if last player is moved let economic works
   total_moves++;
   if ((total_moves %4) == 0)
     for (auto& it : resource) it.second = get_new_price(it.first, it.second);
+  return this;
+}
+
+Game* Game::reset() {
+  players_resource.clear();
+  resource.clear();
+  players_turn.clear();
+  players_restriction.clear();
+  //init players_resource
+  players_resource.insert({A, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
+  players_resource.insert({B, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
+  players_resource.insert({C, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
+  players_resource.insert({ME, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
+  //init resource
+  resource.insert({GAS, 5});
+  resource.insert({OIL, 6});
+  resource.insert({METAL, 7});
+  //init players turn
+  players_turn.insert({ME, A});
+  players_turn.insert({A, B});
+  players_turn.insert({B, C});
+  players_turn.insert({C, ME});
+  //init restrictions
+  players_restriction.insert({A, Restriction{}});
+  players_restriction.insert({B, Restriction{}});
+  players_restriction.insert({C, Restriction{}});
+  players_restriction.insert({ME, Restriction{}});
+
+  fire_callbacks(reset_callbacks);
+
+  return this;
+}
+
+Game* Game::on_made_move(const Callback& callback) {
+  made_move_callbacks.push_back(callback);
   return this;
 }
 
@@ -124,8 +140,8 @@ Game* Game::on_trade(const Callback& callback) {
   return this;
 }
 
-Game* Game::on_made_move(const Callback& callback) {
-  made_move_callbacks.push_back(callback);
+Game* Game::on_reset(const Callback& callback) {
+  reset_callbacks.push_back(callback);
   return this;
 }
 
@@ -136,11 +152,16 @@ QString Game::to_string() {
   return str;
 }
 
+Game* Game::fire_callbacks(const std::vector<Callback>& callbacks) {
+  for (auto it : callbacks) it();
+  return this;
+}
+
 Game* Game::trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
   //trade and notify about it
   players_resource[active_player][x] -= x_amount;
   players_resource[active_player][y] += y_amount;
-  for (auto it : trade_callbacks) it();
+  fire_callbacks(trade_callbacks);
   return this;
 }
 
@@ -149,6 +170,7 @@ Player* Player::make_move(game::Game& game) {
     return this;
   qDebug() << "before " << game.to_string();
   if (game.is_on_restriction(DEAD)) {
+    reset();
     game.made_move();
     return this;
   }
@@ -185,3 +207,8 @@ Player* Player::make_move(game::Game& game) {
 bool Player::is_think_enough() {
   return ((++think_time % 60) == 0) ? true : false;
 } 
+
+Player* Player::reset() {
+  state = BOUGHT;
+  return this;
+}

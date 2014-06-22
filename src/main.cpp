@@ -15,8 +15,21 @@ using namespace parser;
 
 const int DELAY = 1000 / 100; //fps per second
 
+enum State {ASK, NONE} state = NONE;
+
 Game pragma;
 Object* top = nullptr;
+
+void ask_again() {
+  Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
+  confirmation->on_approved([confirmation]() {
+    top->on_after(std::bind(&Object::remove, top, confirmation));
+    pragma.reset();
+  });
+  confirmation->on_denied([confirmation]() {
+    top->on_after(std::bind(&Object::remove, top, confirmation));
+  });
+}
 
 void buy_final(QString resource) {
   Spin* spin = new Spin(top, 0, 400, 25, "spin");
@@ -208,6 +221,26 @@ int main(int argc, char** argv) {
 	me->select();
     }
   });
+  pragma.on_reset([a_player, b_player, c_player, me]() {
+    a_player->deselect();
+    b_player->deselect();
+    c_player->deselect(),
+    me->deselect();  
+    switch (pragma.get_active_player()) {
+      case A:
+	a_player->select();
+  	break;
+      case B:
+	b_player->select();
+	break;
+      case C:
+	c_player->select();
+	break;
+      case ME:
+	me->select();
+    }
+    state = NONE;
+  });
   //main cycle 
   bool is_running = true;
   while (is_running) {
@@ -228,6 +261,11 @@ int main(int argc, char** argv) {
     //update
     if (pragma.get_active_player() != ME)
       players[pragma.get_active_player()].make_move(pragma);
+    if (pragma.is_on_restriction(A, DEAD) && pragma.is_on_restriction(B, DEAD) &&
+	pragma.is_on_restriction(C, DEAD) && state == NONE) {
+      state = ASK;
+      ask_again();
+    }
     //render
     SDL_SetRenderDrawColor(renderer, 0,0,0,255);
     SDL_RenderClear(renderer);

@@ -40,10 +40,13 @@ namespace game {
     bool is_on_restriction(PLAYER player, RESTRICTION restriction);
     bool is_on_restriction(RESTRICTION restriction);
     Game* made_move();
+    Game* reset();
     Game* on_made_move(const Callback& callback);
     Game* on_trade(const Callback& callback);
+    Game* on_reset(const Callback& callback);
     QString to_string();
   private:
+    Game* fire_callbacks(const std::vector<Callback>& callbacks);
     Game* trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount);
   private:
     PLAYER active_player = ME;
@@ -54,6 +57,7 @@ namespace game {
     Turn players_turn;
     std::vector<Callback> made_move_callbacks;
     std::vector<Callback> trade_callbacks;
+    std::vector<Callback> reset_callbacks;
   };
 
   class Player {
@@ -61,6 +65,7 @@ namespace game {
     Player* make_move(game::Game& game);
   private:
     bool is_think_enough();
+    Player* reset();
   private:
     enum State {BOUGHT, SOLD} state = BOUGHT;
     int think_time = 0;
