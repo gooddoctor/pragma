@@ -13,7 +13,7 @@ namespace game {
   static const QString PLAYER_to_str[] = {"A", "B", "C", "ME"};
 
   enum RESTRICTION {DEAD, KILL, ROB};
-  static const QString RESTRICTION_to_str[] = {"DEAD" "KILL", "ROB",};
+  static const QString RESTRICTION_to_str[] = {"DEAD" "KILL", "ROB"};
 
   typedef std::map<RESOURCE, int> Resource;
   typedef std::map<PLAYER, Resource> PlayersResource;
@@ -35,12 +35,14 @@ namespace game {
     Game* sold(RESOURCE x, int amount);
     Game* kill(PLAYER victim, int amount);
     Game* rob(PLAYER victim, int amount);
+    bool remove_restriction(RESTRICTION restriction, int amount);
     bool remove_kill_restriction(int amount);
     bool remove_rob_restriction(int amount);
     bool is_on_restriction(PLAYER player, RESTRICTION restriction);
     bool is_on_restriction(RESTRICTION restriction);
     Game* made_move();
     Game* reset();
+    Game* on_remove_restriction(const Callback& callback);
     Game* on_made_move(const Callback& callback);
     Game* on_trade(const Callback& callback);
     Game* on_reset(const Callback& callback);
@@ -55,6 +57,7 @@ namespace game {
     PlayersResource players_resource;
     PlayersRestriction players_restriction;
     Turn players_turn;
+    std::vector<Callback> remove_restriction_callbacks;
     std::vector<Callback> made_move_callbacks;
     std::vector<Callback> trade_callbacks;
     std::vector<Callback> reset_callbacks;
@@ -64,10 +67,12 @@ namespace game {
   public:
     Player* make_move(game::Game& game);
   private:
-    bool is_think_enough();
-    Player* reset();
+    bool think_enough(Game&);
+    bool remove_restriction(Game& game);
+    bool action(Game& game);
+    bool change_state(Game&);    
   private:
-    enum State {BOUGHT, SOLD} state = BOUGHT;
+    enum State {BOUGHT, SOLD, MURDER, ROBERRY} state = BOUGHT;
     int think_time = 0;
   };
 }

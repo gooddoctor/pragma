@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QDir>
 
 #include "game/game.hpp"
@@ -19,6 +20,19 @@ enum State {ASK, NONE} state = NONE;
 
 Game pragma;
 Object* top = nullptr;
+
+void unbind(RESTRICTION restriction) {
+  // Text* txt = new Text(top, 0, 12, 10, "Sheet", RESTRICTION_to_str[restriction], 
+  // 		       "resource/Times New Roman Cyr.ttf", 12, {255, 255, 255, 0});
+  // Menu* menu = new Menu(top, 0, 400 - 100, 20, "menu", {RESTRICTION_to_str[restriction]});
+  Spin* spin = new Spin(top, 0, 400, 25, "spin");
+  Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
+  confirmation->on_approved([restriction, spin, confirmation]() {
+    top->on_after(std::bind(&Object::remove, top, spin));
+    top->on_after(std::bind(&Object::remove, top, confirmation));
+    pragma.remove_restriction(restriction, spin->val());
+  });
+}
 
 void ask_again() {
   Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
@@ -241,6 +255,9 @@ int main(int argc, char** argv) {
     }
     state = NONE;
   });
+  pragma.on_remove_restriction([]() {
+    state = NONE;
+  });
   //main cycle 
   bool is_running = true;
   while (is_running) {
@@ -265,6 +282,19 @@ int main(int argc, char** argv) {
 	pragma.is_on_restriction(C, DEAD) && state == NONE) {
       state = ASK;
       ask_again();
+    }
+    if (pragma.is_on_restriction(ME, DEAD)) {
+      exit(1);
+    }
+    if (pragma.is_on_restriction(ME, KILL) && state == NONE) {
+      qDebug() << "kill";
+      state = ASK;
+      unbind(KILL);
+    }
+    if (pragma.is_on_restriction(ME, ROB) && state == NONE) {
+      qDebug() << "rob";
+      state = ASK;
+      unbind(ROB);
     }
     //render
     SDL_SetRenderDrawColor(renderer, 0,0,0,255);

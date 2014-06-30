@@ -62,6 +62,23 @@ Game* Game::rob(PLAYER victim, int amount) {
   return this;
 }
 
+bool Game::remove_restriction(RESTRICTION restriction, int amount) {
+  bool result = false;
+  switch (restriction) {
+  case DEAD:
+    result = false;
+    break;
+  case KILL:
+    result = remove_kill_restriction(amount);
+    break;
+  case ROB:
+    result = remove_rob_restriction(amount);
+    break;
+  }
+  fire_callbacks(remove_restriction_callbacks);
+  return result;
+}
+
 bool Game::remove_kill_restriction(int amount) {
   auto it = players_restriction[active_player].find(KILL);
   int blood_money = it->second;
@@ -130,6 +147,11 @@ Game* Game::reset() {
   return this;
 }
 
+Game* Game::on_remove_restriction(const Callback& callback) {
+  remove_restriction_callbacks.push_back(callback);
+  return this;
+}
+
 Game* Game::on_made_move(const Callback& callback) {
   made_move_callbacks.push_back(callback);
   return this;
@@ -166,49 +188,85 @@ Game* Game::trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
 }
 
 Player* Player::make_move(game::Game& game) {
-  if (!is_think_enough())
+  if (!think_enough(game))
     return this;
   qDebug() << "before " << game.to_string();
-  if (game.is_on_restriction(DEAD)) {
-    reset();
+  if (!remove_restriction(game)) {
     game.made_move();
     return this;
   }
-  if (game.is_on_restriction(KILL)) {
-    game.remove_kill_restriction(random_piece(game.get_player_resource(MONEY), 30, 50));
+  if (!action(game)) {
+    game.made_move();
     return this;
   }
-  if (game.is_on_restriction(ROB)) {
-    game.remove_rob_restriction(random_piece(game.get_player_resource(MONEY), 10, 30));
+  if (!change_state(game)) {
+    game.made_move();
     return this;
-  }
-  //make move
-  switch (state) {
-    case BOUGHT: {
-      int money = random_piece(game.get_player_resource(MONEY), 80, 80); //spend only 80%
-      game.bought(GAS, (money / 3) / game.get_resource(GAS));
-      game.bought(OIL, (money / 3) / game.get_resource(OIL));
-      game.bought(METAL, (money / 3) / game.get_resource(METAL));
-      state = SOLD;
-      break;
-    } case SOLD: {
-      game.sold(GAS, game.get_player_resource(GAS));
-      game.sold(OIL, game.get_player_resource(OIL));
-      game.sold(METAL, game.get_player_resource(METAL));
-      state = BOUGHT;
-      break;
-    }
   }
   qDebug() << "after " << game.to_string();
   game.made_move();
   return this;
 }
 
-bool Player::is_think_enough() {
+bool Player::think_enough(Game&) {
   return ((++think_time % 60) == 0) ? true : false;
-} 
-
-Player* Player::reset() {
-  state = BOUGHT;
-  return this;
 }
+
+bool Player::remove_restriction(Game& game) {
+  if (game.is_on_restriction(DEAD)) {
+    return false;
+  } else if (game.is_on_restriction(KILL)) {
+    return game.remove_kill_restriction(random_piece(game.get_player_resource(MONEY), 30, 50));
+  } else if (game.is_on_restriction(ROB)) {
+    return game.remove_rob_restriction(random_piece(game.get_player_resource(MONEY), 10, 30));
+  } else {
+    return true;
+  }
+}
+
+bool Player::action(Game& game) {
+  switch (state) {
+    case BOUGHT: {
+      int money = random_piece(game.get_player_resource(MONEY), 80, 80); //spend only 80%
+      game.bought(GAS, (money / 3) / game.get_resource(GAS));
+      game.bought(OIL, (money / 3) / game.get_resource(OIL));
+      game.bought(METAL, (money / 3) / game.get_resource(METAL));
+      break;
+    } case SOLD:
+      game.sold(GAS, game.get_player_resource(GAS));
+      game.sold(OIL, game.get_player_resource(OIL));
+      game.sold(METAL, game.get_player_resource(METAL));
+      break;
+    case MURDER:
+      game.kill(ME, random_piece(game.get_player_resource(MONEY), 10, 30));
+      break;
+    case ROBERRY:
+      game.rob(ME, random_piece(game.get_player_resource(MONEY), 10, 30));
+      break;
+  }
+  return true;
+}
+
+bool Player::change_state(Game&) {
+  switch (state) {
+    case BOUGHT: 
+      if (rand() % 10 == 0) 
+	state = MURDER;
+      else if (rand() % 10 == 0)
+	state = ROBERRY;
+      else
+	state = SOLD;
+      break;
+    case SOLD:
+      state = BOUGHT;
+      break;
+    case MURDER:
+      state = BOUGHT;
+      break;
+    case ROBERRY:
+      state = BOUGHT;
+      break;
+  }
+  return true;
+}
+    
