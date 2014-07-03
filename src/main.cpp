@@ -22,12 +22,12 @@ Game pragma;
 Object* top = nullptr;
 
 void unbind(RESTRICTION restriction) {
-  // Text* txt = new Text(top, 0, 12, 10, "Sheet", RESTRICTION_to_str[restriction], 
-  // 		       "resource/Times New Roman Cyr.ttf", 12, {255, 255, 255, 0});
-  // Menu* menu = new Menu(top, 0, 400 - 100, 20, "menu", {RESTRICTION_to_str[restriction]});
+  Label* warning = new Label(top, 0, 280, 20, "warning", "", 
+			     "you have been: " + RESTRICTION_to_str[restriction]);
   Spin* spin = new Spin(top, 0, 400, 25, "spin");
   Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
-  confirmation->on_approved([restriction, spin, confirmation]() {
+  confirmation->on_approved([restriction, warning, spin, confirmation]() {
+    top->on_after(std::bind(&Object::remove, top, warning));
     top->on_after(std::bind(&Object::remove, top, spin));
     top->on_after(std::bind(&Object::remove, top, confirmation));
     pragma.remove_restriction(restriction, spin->val());
@@ -307,37 +307,3 @@ int main(int argc, char** argv) {
       SDL_Delay((int)(DELAY - duration));
   }
 }
-
-
-  
-
-      
-
-
-    
-  
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
-
-    
-
-
-

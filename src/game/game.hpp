@@ -13,7 +13,7 @@ namespace game {
   static const QString PLAYER_to_str[] = {"A", "B", "C", "ME"};
 
   enum RESTRICTION {DEAD, KILL, ROB};
-  static const QString RESTRICTION_to_str[] = {"DEAD" "KILL", "ROB"};
+  static const QString RESTRICTION_to_str[] = {"DEAD", "KILL", "ROB"};
 
   typedef std::map<RESOURCE, int> Resource;
   typedef std::map<PLAYER, Resource> PlayersResource;
