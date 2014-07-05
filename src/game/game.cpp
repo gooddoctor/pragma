@@ -12,7 +12,7 @@ QString resource_to_string(Resource resource) {
 }
 
 int get_new_price(RESOURCE x, int current_price) {
-  return current_price + 2;
+  return current_price + 1;
 }
 
 int random_piece(int entire, int a, int b) {
@@ -49,7 +49,7 @@ Game* Game::bought(RESOURCE x, int amount) {
 }
 
 Game* Game::sold(RESOURCE x, int amount) {
-  return trade(x, amount, MONEY, resource[x] * amount);
+  return trade(x, amount, MONEY, resource[x] * amount * 1.5);
 }
 
 Game* Game::kill(PLAYER victim, int amount) {
@@ -123,14 +123,14 @@ Game* Game::reset() {
   players_turn.clear();
   players_restriction.clear();
   //init players_resource
-  players_resource.insert({A, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
-  players_resource.insert({B, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
-  players_resource.insert({C, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
-  players_resource.insert({ME, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 100}}});
+  players_resource.insert({A, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 10}}});
+  players_resource.insert({B, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 10}}});
+  players_resource.insert({C, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 10}}});
+  players_resource.insert({ME, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 10}}});
   //init resource
-  resource.insert({GAS, 5});
-  resource.insert({OIL, 6});
-  resource.insert({METAL, 7});
+  resource.insert({GAS, 1});
+  resource.insert({OIL, 2});
+  resource.insert({METAL, 3});
   //init players turn
   players_turn.insert({ME, A});
   players_turn.insert({A, B});
@@ -180,10 +180,12 @@ Game* Game::fire_callbacks(const std::vector<Callback>& callbacks) {
 }
 
 Game* Game::trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount) {
-  //trade and notify about it
-  players_resource[active_player][x] -= x_amount;
-  players_resource[active_player][y] += y_amount;
-  fire_callbacks(trade_callbacks);
+  if (players_resource[active_player][x] >= x_amount) {
+    //trade and notify about it
+    players_resource[active_player][x] -= x_amount;
+    players_resource[active_player][y] += y_amount;
+    fire_callbacks(trade_callbacks);
+  }
   return this;
 }
 
@@ -227,7 +229,7 @@ bool Player::remove_restriction(Game& game) {
 bool Player::action(Game& game) {
   switch (state) {
     case BOUGHT: {
-      int money = random_piece(game.get_player_resource(MONEY), 80, 80); //spend only 80%
+      int money = random_piece(game.get_player_resource(MONEY), 90, 90); //spend only 80%
       game.bought(GAS, (money / 3) / game.get_resource(GAS));
       game.bought(OIL, (money / 3) / game.get_resource(OIL));
       game.bought(METAL, (money / 3) / game.get_resource(METAL));
