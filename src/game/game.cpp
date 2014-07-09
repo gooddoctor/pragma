@@ -12,7 +12,7 @@ QString resource_to_string(Resource resource) {
 }
 
 int get_new_price(RESOURCE x, int current_price) {
-  return current_price + 1;
+  return current_price;
 }
 
 int random_piece(int entire, int a, int b) {
@@ -54,12 +54,12 @@ Game* Game::sold(RESOURCE x, int amount) {
 
 Game* Game::kill(PLAYER victim, int amount) {
   players_restriction[victim].insert({KILL, amount});
-  return this;
+  return trade(MONEY, amount, MONEY, 0);
 }
 
 Game* Game::rob(PLAYER victim, int amount) {
   players_restriction[victim].insert({ROB, amount});
-  return this;
+  return trade(MONEY, amount, MONEY, 0);
 }
 
 bool Game::remove_restriction(RESTRICTION restriction, int amount) {

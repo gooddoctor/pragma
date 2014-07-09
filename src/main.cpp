@@ -101,11 +101,11 @@ void kill_final(QString victim) {
   Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
   confirmation->on_approved([victim, spin, confirmation]() {
     if (victim == "A")
-      pragma.rob(A, spin->val());
+      pragma.kill(A, spin->val());
     else if (victim == "B")
-      pragma.rob(B, spin->val());
+      pragma.kill(B, spin->val());
     else if (victim == "C")
-      pragma.rob(C, spin->val());
+      pragma.kill(C, spin->val());
     top->on_after(std::bind(&Object::remove, top, spin));
     top->on_after(std::bind(&Object::remove, top, confirmation));
     top->on_after(cancel);
