@@ -162,6 +162,16 @@ void rob() {
   });
 }
 
+void undead() {
+  Label* warning = new Label(top, 0, 280, 20, "warning", "", "you have been: dead. Restrart?");
+  Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
+  confirmation->on_approved([warning, confirmation]() {
+    top->on_after(std::bind(&Object::remove, top, warning));
+    top->on_after(std::bind(&Object::remove, top, confirmation));
+    top->on_after(cancel);
+  });
+}
+
 void unkill() {
   Label* warning = new Label(top, 0, 280, 20, "warning", "", "you have been: killed");
   Spin* spin = new Spin(top, 0, 400, 25, "spin");
@@ -209,6 +219,8 @@ void action() {
       top->on_after(std::bind(&Object::remove, top, m));
     });
     player_state = ACTION;
+  } else if (player_state == ON_FIRE && pragma.is_on_restriction(ME, DEAD)) {
+    undead();
   } else if (player_state == ON_FIRE && pragma.is_on_restriction(ME, KILL)) {
     unkill();
   } else if (player_state == ON_FIRE && pragma.is_on_restriction(ME, ROB)) {
@@ -308,7 +320,9 @@ int main(int argc, char** argv) {
     //update
     if (pragma.get_active_player() != ME)
       players[pragma.get_active_player()].make_move(pragma);
-    if (pragma.is_on_restriction(ME, KILL) || pragma.is_on_restriction(ME, ROB))
+    if (pragma.is_on_restriction(ME, DEAD) ||
+	pragma.is_on_restriction(ME, KILL) || 
+	pragma.is_on_restriction(ME, ROB))
       player_state = ON_FIRE;
     //render
     SDL_SetRenderDrawColor(renderer, 0,0,0,255);

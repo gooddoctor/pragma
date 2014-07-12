@@ -239,11 +239,21 @@ bool Player::action(Game& game) {
       game.sold(OIL, game.get_player_resource(OIL));
       game.sold(METAL, game.get_player_resource(METAL));
       break;
-    case MURDER:
-      game.kill(ME, random_piece(game.get_player_resource(MONEY), 10, 30));
+    case MURDER: {
+      //get our victim
+      PLAYER victim = static_cast<PLAYER>((int)rand() % PLAYER::SIZE);
+      while (victim == game.get_active_player() || game.is_on_restriction(victim, DEAD))
+	victim = static_cast<PLAYER>((int)rand() % PLAYER::SIZE);
+      //kill it now
+      game.kill(victim, random_piece(game.get_player_resource(MONEY), 10, 30));
       break;
-    case ROBERRY:
-      game.rob(ME, random_piece(game.get_player_resource(MONEY), 10, 30));
+    } case ROBERRY:
+      //get our victim
+      PLAYER victim = static_cast<PLAYER>((int)rand() % PLAYER::SIZE);
+      while (victim == game.get_active_player() || game.is_on_restriction(victim, DEAD))
+	victim = static_cast<PLAYER>((int)rand() % PLAYER::SIZE);
+      //rob it now 
+      game.rob(victim, random_piece(game.get_player_resource(MONEY), 10, 30));
       break;
   }
   return true;

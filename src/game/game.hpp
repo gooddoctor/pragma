@@ -9,7 +9,7 @@ namespace game {
   enum RESOURCE {GAS, OIL, METAL, MONEY};
   static const QString RESOURCE_to_str[] = {"GAS", "OIL", "METAL", "MONEY"};
 
-  enum PLAYER {A, B, C, ME};
+  enum PLAYER {A, B, C, ME, SIZE};
   static const QString PLAYER_to_str[] = {"A", "B", "C", "ME"};
 
   enum RESTRICTION {DEAD, KILL, ROB};
