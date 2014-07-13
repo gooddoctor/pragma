@@ -245,7 +245,7 @@ bool Player::action(Game& game) {
       while (victim == game.get_active_player() || game.is_on_restriction(victim, DEAD))
 	victim = static_cast<PLAYER>((int)rand() % PLAYER::SIZE);
       //kill it now
-      game.kill(victim, random_piece(game.get_player_resource(MONEY), 10, 30));
+      game.kill(victim, random_piece(game.get_player_resource(MONEY), 30, 60));
       break;
     } case ROBERRY:
       //get our victim
@@ -253,7 +253,7 @@ bool Player::action(Game& game) {
       while (victim == game.get_active_player() || game.is_on_restriction(victim, DEAD))
 	victim = static_cast<PLAYER>((int)rand() % PLAYER::SIZE);
       //rob it now 
-      game.rob(victim, random_piece(game.get_player_resource(MONEY), 10, 30));
+      game.rob(victim, random_piece(game.get_player_resource(MONEY), 30, 60));
       break;
   }
   return true;
@@ -262,10 +262,8 @@ bool Player::action(Game& game) {
 bool Player::change_state(Game&) {
   switch (state) {
     case BOUGHT: 
-      if (rand() % 10 == 0) 
+      if (rand() % 2 == 0 || rand() % 3 == 0 || rand() % 4 == 0) 
 	state = MURDER;
-      else if (rand() % 10 == 0)
-	state = ROBERRY;
       else
 	state = SOLD;
       break;
@@ -273,10 +271,10 @@ bool Player::change_state(Game&) {
       state = BOUGHT;
       break;
     case MURDER:
-      state = BOUGHT;
+      state = ROBERRY;
       break;
     case ROBERRY:
-      state = BOUGHT;
+      state = SOLD;
       break;
   }
   return true;
