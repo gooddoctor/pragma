@@ -11,6 +11,7 @@ namespace object {
 	  const QString& txt);
     Label* set_text(const QString& txt);
   private:
+    Image* background;
     Image* image;
     Text* text;
   };
