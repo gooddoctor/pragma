@@ -9,7 +9,8 @@ namespace object {
   class Text : public Sprite {
   public:
     Text(Object* parent, int x, int y, int z, const QString& id, 
-	 const QString& text, const QString& font, int font_size, const SDL_Color& color);
+	 const QString& text, const QString& font = default_font, int font_size = 12, 
+	 const SDL_Color& color = default_color);
     QString get_text();
     Text* set_text(const QString& text);
   private:

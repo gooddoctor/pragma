@@ -42,6 +42,7 @@ namespace game {
     bool is_on_restriction(RESTRICTION restriction);
     Game* made_move();
     Game* reset();
+    Game* on_dead(const Callback& callback);
     Game* on_remove_restriction(const Callback& callback);
     Game* on_made_move(const Callback& callback);
     Game* on_trade(const Callback& callback);
@@ -57,6 +58,7 @@ namespace game {
     PlayersResource players_resource;
     PlayersRestriction players_restriction;
     Turn players_turn;
+    std::vector<Callback> dead_callbacks;
     std::vector<Callback> remove_restriction_callbacks;
     std::vector<Callback> made_move_callbacks;
     std::vector<Callback> trade_callbacks;

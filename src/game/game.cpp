@@ -88,6 +88,7 @@ bool Game::remove_kill_restriction(int amount) {
     return true;
   }
   players_restriction[active_player].insert({DEAD, 0});
+  fire_callbacks(dead_callbacks);
   return false;
 }
 
@@ -144,6 +145,11 @@ Game* Game::reset() {
 
   fire_callbacks(reset_callbacks);
 
+  return this;
+}
+
+Game* Game::on_dead(const Callback& callback) {
+  dead_callbacks.push_back(callback);
   return this;
 }
 

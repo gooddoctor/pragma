@@ -11,6 +11,7 @@ namespace object {
   public:
     Sprite(Object* parent, int x, int y, int z, const QString& id, const SurfaceLoader& loader);
     Sprite* render(SDL_Renderer* sdlrender) override;
+    Sprite* disable();
     Sprite* select();
     Sprite* deselect();
     int h() override;
@@ -20,6 +21,7 @@ namespace object {
   private:
     Sprite* fire_callbacks(const std::vector<Callback>& callbacks, const SDL_Event& e);
   private:
+    bool is_disable = false;
     bool is_select = false;
   protected:
     Sprite* reload(const SurfaceLoader& loader);

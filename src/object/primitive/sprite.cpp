@@ -13,10 +13,21 @@ Sprite* Sprite::render(SDL_Renderer* sdlrender) {
   SDL_Rect src = rect(0, 0, w(), h());
   SDL_Rect dst = rect(x, y - h(), w(), h());
   SDL_RenderCopyEx(sdlrender, texture.get(), &src, &dst, 0, NULL, SDL_FLIP_NONE);
-  if (is_select) {
+  if (is_disable) {
+    //draw disable rectangle
+    SDL_SetRenderDrawColor(sdlrender, 255, 0, 0, 255);
+    SDL_RenderDrawLine(sdlrender, x, y - h(), x + w(), y);
+    SDL_RenderDrawLine(sdlrender, x, y, x + w(), y - h());
+  } else if (is_select) {
+    //draw selectable rectangle
     SDL_SetRenderDrawColor(sdlrender, 255, 0, 0, 255);
     SDL_RenderDrawRect(sdlrender, &dst);
   }
+  return this;
+}
+
+Sprite* Sprite::disable() {
+  is_disable = true;
   return this;
 }
 

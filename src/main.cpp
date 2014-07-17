@@ -173,7 +173,7 @@ void undead() {
 }
 
 void unkill() {
-  Label* warning = new Label(top, 0, 280, 20, "warning", "", "you have been: killed");
+  Text* warning = new Text(top, 0, 280, 20, "warning", "you have been: killed");
   Spin* spin = new Spin(top, 0, 400, 25, "spin");
   Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
   confirmation->on_approved([warning, spin, confirmation]() {
@@ -186,7 +186,7 @@ void unkill() {
 }
 
 void unrob() {
-  Label* warning = new Label(top, 0, 280, 20, "warning", "", "you have been: robed");
+  Text* warning = new Text(top, 0, 280, 20, "warning", "you have been: robed");
   Spin* spin = new Spin(top, 0, 400, 25, "spin");
   Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
   confirmation->on_approved([warning, spin, confirmation]() {
@@ -268,6 +268,16 @@ int main(int argc, char** argv) {
     oil->set_text(QString::number(pragma.get_player_resource(ME)[OIL]));
     metal->set_text(QString::number(pragma.get_player_resource(ME)[METAL]));
     money->set_text(QString::number(pragma.get_player_resource(ME)[MONEY]));
+  });
+  pragma.on_dead([a_player, b_player, c_player, me]() {
+    if (pragma.is_on_restriction(A, DEAD))
+      a_player->disable();
+    else if (pragma.is_on_restriction(B, DEAD))
+      b_player->disable();
+    else if (pragma.is_on_restriction(C, DEAD))
+      c_player->disable();
+    else if (pragma.is_on_restriction(ME, DEAD))
+      me->disable();
   });
   ego->on_mouse_button_up([](Sprite*, const SDL_Event&) {
     top->on_after(&action);
