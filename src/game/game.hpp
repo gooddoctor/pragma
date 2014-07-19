@@ -15,9 +15,11 @@ namespace game {
   enum RESTRICTION {DEAD, KILL, ROB};
   static const QString RESTRICTION_to_str[] = {"DEAD", "KILL", "ROB"};
 
+  typedef std::map<RESOURCE, double> Profit;
+
   typedef std::map<RESOURCE, int> Resource;
   typedef std::map<PLAYER, Resource> PlayersResource;
-
+  
   typedef std::multimap<RESTRICTION, int> Restriction;
   typedef std::map<PLAYER, Restriction> PlayersRestriction;
 
@@ -54,6 +56,7 @@ namespace game {
   private:
     PLAYER active_player = ME;
     int total_moves = 0;
+    Profit profit;
     Resource resource;
     PlayersResource players_resource;
     PlayersRestriction players_restriction;

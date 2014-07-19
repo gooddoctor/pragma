@@ -11,7 +11,11 @@ QString resource_to_string(Resource resource) {
   return str;
 }
 
-int get_new_price(RESOURCE x, int current_price) {
+double get_new_profit(RESOURCE, double) {
+  return (rand() % (4000 + 1) + 1000) / 1000.0; //from 1.0 to 5.0
+}
+
+int get_new_price(RESOURCE, int current_price) {
   return current_price;
 }
 
@@ -49,7 +53,7 @@ Game* Game::bought(RESOURCE x, int amount) {
 }
 
 Game* Game::sold(RESOURCE x, int amount) {
-  return trade(x, amount, MONEY, resource[x] * amount * 1.5);
+  return trade(x, amount, MONEY, resource[x] * amount * profit[x]);
 }
 
 Game* Game::kill(PLAYER victim, int amount) {
@@ -113,8 +117,11 @@ Game* Game::made_move() {
   fire_callbacks(made_move_callbacks);
   //if last player is moved let economic works
   total_moves++;
-  if ((total_moves %4) == 0)
+  if ((total_moves % 4) == 0) {
+    //generating new price and profit structures
+    for (auto& it : profit) it.second = get_new_profit(it.first, it.second);
     for (auto& it : resource) it.second = get_new_price(it.first, it.second);
+  }
   return this;
 }
 
@@ -123,6 +130,10 @@ Game* Game::reset() {
   resource.clear();
   players_turn.clear();
   players_restriction.clear();
+  //init profit
+  profit.insert({GAS, 1.5});
+  profit.insert({OIL, 1.5});
+  profit.insert({METAL, 1.5});
   //init players_resource
   players_resource.insert({A, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 10}}});
   players_resource.insert({B, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 10}}});
