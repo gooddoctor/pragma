@@ -72,9 +72,9 @@ namespace game {
     bool think_enough(Game&);
     bool remove_restriction(Game& game);
     bool action(Game& game);
-    bool change_state(Game&);    
+    bool change_state(Game& game);    
   private:
-    enum State {BOUGHT, SOLD, MURDER, ROBERRY} state = BOUGHT;
+    enum State {BOUGHT, SOLD, MURDER} state = BOUGHT;
     int think_time = 0;
   };
 }

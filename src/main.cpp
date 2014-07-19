@@ -163,7 +163,7 @@ void rob() {
 }
 
 void undead() {
-  Label* warning = new Label(top, 0, 280, 20, "warning", "", "you have been: dead. Restrart?");
+  Text* warning = new Text(top, 0, 280, 20, "warning", "you have been: dead. Restrart?");
   Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
   confirmation->on_approved([warning, confirmation]() {
     top->on_after(std::bind(&Object::remove, top, warning));
@@ -272,11 +272,11 @@ int main(int argc, char** argv) {
   pragma.on_dead([a_player, b_player, c_player, me]() {
     if (pragma.is_on_restriction(A, DEAD))
       a_player->disable();
-    else if (pragma.is_on_restriction(B, DEAD))
+    if (pragma.is_on_restriction(B, DEAD))
       b_player->disable();
-    else if (pragma.is_on_restriction(C, DEAD))
+    if (pragma.is_on_restriction(C, DEAD))
       c_player->disable();
-    else if (pragma.is_on_restriction(ME, DEAD))
+    if (pragma.is_on_restriction(ME, DEAD))
       me->disable();
   });
   ego->on_mouse_button_up([](Sprite*, const SDL_Event&) {
