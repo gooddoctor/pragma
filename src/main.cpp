@@ -166,6 +166,7 @@ void undead() {
   Text* warning = new Text(top, 0, 280, 20, "warning", "you have been: dead. Restrart?");
   Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
   confirmation->on_approved([warning, confirmation]() {
+    pragma.reset();
     top->on_after(std::bind(&Object::remove, top, warning));
     top->on_after(std::bind(&Object::remove, top, confirmation));
     top->on_after(cancel);
@@ -284,11 +285,35 @@ int main(int argc, char** argv) {
   });
   hourglass->on_mouse_button_up([](Sprite*, const SDL_Event&) {
     pragma.made_move();
-  });  
+  });
+
+  pragma.on_reset([a_player, b_player, c_player, me]() {
+    a_player->deselect();
+    a_player->enable();
+    b_player->deselect();
+    b_player->enable();
+    c_player->deselect();
+    c_player->enable();
+    me->deselect();
+    me->enable();
+    switch (pragma.get_active_player()) {
+      case A:
+	a_player->select();
+  	break;
+      case B:
+	b_player->select();
+	break;
+      case C:
+	c_player->select();
+	break;
+      case ME:
+	me->select();
+    }
+  });
   pragma.on_made_move([a_player, b_player, c_player, me]() {
     a_player->deselect();
     b_player->deselect();
-    c_player->deselect(),
+    c_player->deselect();
     me->deselect();  
     switch (pragma.get_active_player()) {
       case A:

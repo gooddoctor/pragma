@@ -26,6 +26,11 @@ Sprite* Sprite::render(SDL_Renderer* sdlrender) {
   return this;
 }
 
+Sprite* Sprite::enable() {
+  is_disable = false;
+  return this;
+}
+
 Sprite* Sprite::disable() {
   is_disable = true;
   return this;

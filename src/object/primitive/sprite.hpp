@@ -11,6 +11,7 @@ namespace object {
   public:
     Sprite(Object* parent, int x, int y, int z, const QString& id, const SurfaceLoader& loader);
     Sprite* render(SDL_Renderer* sdlrender) override;
+    Sprite* enable();
     Sprite* disable();
     Sprite* select();
     Sprite* deselect();
