@@ -40,6 +40,7 @@ void buy_final(QString resource) {
       pragma.bought(OIL, spin->val());
     else if(resource == "METAL")
       pragma.bought(METAL, spin->val());
+    pragma.made_move();
     top->on_after(std::bind(&Object::remove, top, spin));
     top->on_after(std::bind(&Object::remove, top, confirmation));
     top->on_after(cancel);
@@ -73,6 +74,7 @@ void sell_final(QString resource) {
       pragma.sold(OIL, spin->val());
     else if(resource == "METAL")
       pragma.sold(METAL, spin->val());
+    pragma.made_move();
     top->on_after(std::bind(&Object::remove, top, spin));
     top->on_after(std::bind(&Object::remove, top, confirmation));
     top->on_after(cancel);
@@ -106,6 +108,7 @@ void kill_final(QString victim) {
       pragma.kill(B, spin->val());
     else if (victim == "C")
       pragma.kill(C, spin->val());
+    pragma.made_move();
     top->on_after(std::bind(&Object::remove, top, spin));
     top->on_after(std::bind(&Object::remove, top, confirmation));
     top->on_after(cancel);
@@ -139,6 +142,7 @@ void rob_final(QString victim) {
       pragma.rob(B, spin->val());
     else if (victim == "C")
       pragma.rob(C, spin->val());
+    pragma.made_move();
     top->on_after(std::bind(&Object::remove, top, spin));
     top->on_after(std::bind(&Object::remove, top, confirmation));
     top->on_after(cancel);
@@ -167,6 +171,12 @@ void undead() {
   Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
   confirmation->on_approved([warning, confirmation]() {
     pragma.reset();
+    top->on_after(std::bind(&Object::remove, top, warning));
+    top->on_after(std::bind(&Object::remove, top, confirmation));
+    top->on_after(cancel);
+  });
+  confirmation->on_denied([warning, confirmation]() {
+    pragma.exit();
     top->on_after(std::bind(&Object::remove, top, warning));
     top->on_after(std::bind(&Object::remove, top, confirmation));
     top->on_after(cancel);
@@ -331,15 +341,14 @@ int main(int argc, char** argv) {
   });    
   
   //main cycle 
-  bool is_running = true;
-  while (is_running) {
+  while (!pragma.is_exit()) {
     Uint32 start = SDL_GetTicks();
     //handle events
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       switch(event.type) {
 	case SDL_QUIT:
-	  is_running = false;
+	  pragma.exit();
 	  break;
 	/* MANY
 	 * MORE

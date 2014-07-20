@@ -28,6 +28,15 @@ Game::Game() {
   reset();
 }
 
+Game* Game::exit() {
+  is_start = false;
+  return this;
+}
+
+bool Game::is_exit() {
+  return !is_start;
+}
+
 PLAYER Game::get_active_player() {
   return active_player;
 }
@@ -134,15 +143,15 @@ Game* Game::reset() {
   profit.insert({GAS, 1.5});
   profit.insert({OIL, 1.5});
   profit.insert({METAL, 1.5});
-  //init players_resource
+  //init players_resource 
   players_resource.insert({A, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 10}}});
   players_resource.insert({B, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 10}}});
   players_resource.insert({C, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 10}}});
   players_resource.insert({ME, Resource{{GAS, 0}, {OIL, 0}, {METAL, 0}, {MONEY, 10}}});
   //init resource
   resource.insert({GAS, 1});
-  resource.insert({OIL, 2});
-  resource.insert({METAL, 3});
+  resource.insert({OIL, 1});
+  resource.insert({METAL, 1});
   //init players turn
   players_turn.insert({ME, A});
   players_turn.insert({A, B});
@@ -246,10 +255,10 @@ bool Player::remove_restriction(Game& game) {
 bool Player::action(Game& game) {
   switch (state) {
     case BOUGHT: {
-      int money = game.get_player_resource(MONEY);
-      game.bought(GAS, (money / 3) / game.get_resource(GAS));
-      game.bought(OIL, (money / 3) / game.get_resource(OIL));
-      game.bought(METAL, (money / 3) / game.get_resource(METAL));
+      RESOURCE victim = static_cast<RESOURCE>((int)rand() % RESOURCE::RESOURCE_SIZE);
+      while (victim == MONEY) //i'm sory. we cant buy money. 
+	victim = static_cast<RESOURCE>((int)rand() % RESOURCE::RESOURCE_SIZE);
+      game.bought(victim, game.get_player_resource(MONEY) / game.get_resource(victim));
       break;
     } case SOLD:
       game.sold(GAS, game.get_player_resource(GAS));
@@ -258,9 +267,9 @@ bool Player::action(Game& game) {
       break;
     case MURDER: {
       //get our victim
-      PLAYER victim = static_cast<PLAYER>((int)rand() % PLAYER::SIZE);
+      PLAYER victim = static_cast<PLAYER>((int)rand() % PLAYER::PLAYER_SIZE);
       while (victim == game.get_active_player() || game.is_on_restriction(victim, DEAD))
-	victim = static_cast<PLAYER>((int)rand() % PLAYER::SIZE);
+	victim = static_cast<PLAYER>((int)rand() % PLAYER::PLAYER_SIZE);
       //kill it now
       game.kill(victim, random_piece(game.get_player_resource(MONEY) - 10, 70, 90));
       break;

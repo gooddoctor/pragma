@@ -6,10 +6,10 @@
 #include <QString>
 
 namespace game {
-  enum RESOURCE {GAS, OIL, METAL, MONEY};
+  enum RESOURCE {GAS, OIL, METAL, MONEY, RESOURCE_SIZE};
   static const QString RESOURCE_to_str[] = {"GAS", "OIL", "METAL", "MONEY"};
 
-  enum PLAYER {A, B, C, ME, SIZE};
+  enum PLAYER {A, B, C, ME, PLAYER_SIZE};
   static const QString PLAYER_to_str[] = {"A", "B", "C", "ME"};
 
   enum RESTRICTION {DEAD, KILL, ROB};
@@ -28,6 +28,8 @@ namespace game {
   typedef std::map<PLAYER, PLAYER> Turn;
   public:
     Game();
+    Game* exit();
+    bool is_exit();
     PLAYER get_active_player();
     Resource get_resource();
     int get_resource(RESOURCE x);
@@ -55,6 +57,7 @@ namespace game {
     Game* trade(RESOURCE x, int x_amount, RESOURCE y, int y_amount);
   private:
     PLAYER active_player = ME;
+    bool is_start = true;
     int total_moves = 0;
     Profit profit;
     Resource resource;
