@@ -77,7 +77,8 @@ Sprite* Sprite::reload(const SurfaceLoader& loader) {
 }
 
 Sprite* Sprite::mouse_button_up_handler(const SDL_Event& e) {
-  fire_callbacks(button_up_callbacks, e);
+  if (!is_disable)
+    fire_callbacks(button_up_callbacks, e);
   return this;
 }
 

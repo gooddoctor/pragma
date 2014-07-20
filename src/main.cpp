@@ -320,23 +320,27 @@ int main(int argc, char** argv) {
 	me->select();
     }
   });
-  pragma.on_made_move([a_player, b_player, c_player, me]() {
+  pragma.on_made_move([a_player, b_player, c_player, me, hourglass]() {
     a_player->deselect();
     b_player->deselect();
     c_player->deselect();
-    me->deselect();  
+    me->deselect();
     switch (pragma.get_active_player()) {
       case A:
 	a_player->select();
+	hourglass->disable();
   	break;
       case B:
 	b_player->select();
+	hourglass->disable();
 	break;
       case C:
 	c_player->select();
+	hourglass->disable();
 	break;
       case ME:
 	me->select();
+	hourglass->enable();
     }
   });    
   
@@ -362,7 +366,7 @@ int main(int argc, char** argv) {
       }
     }
     //update
-    if (pragma.get_active_player() != ME)
+    if (pragma.get_active_player() != ME) 
       players[pragma.get_active_player()].make_move(pragma);
     if (pragma.is_on_restriction(ME, DEAD) ||
 	pragma.is_on_restriction(ME, KILL) || 
