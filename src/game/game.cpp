@@ -236,6 +236,11 @@ Player* Player::make_move(game::Game& game) {
   return this;
 }
 
+Player* Player::once_more_with_feelings() {
+  state = BOUGHT;
+  return this;
+}
+
 bool Player::think_enough(Game&) {
   return ((++think_time % 60) == 0) ? true : false;
 }

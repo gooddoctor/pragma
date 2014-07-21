@@ -183,6 +183,24 @@ void undead() {
   });
 }
 
+void unwin() {
+  Text* warning = new Text(top, 0, 280, 20, "warning", "you have been: win. Play more?");
+  Confirmation* confirmation = new Confirmation(top, 0, 400 - 60, 20, "confirmation");
+  confirmation->on_approved([warning, confirmation]() {
+    pragma.reset();
+    top->on_after(std::bind(&Object::remove, top, warning));
+    top->on_after(std::bind(&Object::remove, top, confirmation));
+    top->on_after(cancel);
+  });
+  confirmation->on_denied([warning, confirmation]() {
+    pragma.exit();
+    top->on_after(std::bind(&Object::remove, top, warning));
+    top->on_after(std::bind(&Object::remove, top, confirmation));
+    top->on_after(cancel);
+  });
+}
+
+
 void unkill() {
   Text* warning = new Text(top, 0, 280, 20, "warning", "you have been: killed");
   Spin* spin = new Spin(top, 0, 400, 25, "spin");
@@ -236,6 +254,8 @@ void action() {
     unkill();
   } else if (player_state == ON_FIRE && pragma.is_on_restriction(ME, ROB)) {
     unrob();
+  } else {
+    unwin();
   }
 }
 
@@ -297,7 +317,8 @@ int main(int argc, char** argv) {
     pragma.made_move();
   });
 
-  pragma.on_reset([a_player, b_player, c_player, me]() {
+  pragma.on_reset([a_player, b_player, c_player, me, &players, gas, oil, metal, money]() {
+    //reset images
     a_player->deselect();
     a_player->enable();
     b_player->deselect();
@@ -306,6 +327,17 @@ int main(int argc, char** argv) {
     c_player->enable();
     me->deselect();
     me->enable();
+    //reset players
+    players[A].once_more_with_feelings();
+    players[B].once_more_with_feelings();
+    players[C].once_more_with_feelings();
+    players[ME].once_more_with_feelings();
+    //reset labels
+    gas->set_text(QString::number(pragma.get_player_resource(ME)[GAS])),
+    oil->set_text(QString::number(pragma.get_player_resource(ME)[OIL]));
+    metal->set_text(QString::number(pragma.get_player_resource(ME)[METAL]));
+    money->set_text(QString::number(pragma.get_player_resource(ME)[MONEY]));
+    //select active
     switch (pragma.get_active_player()) {
       case A:
 	a_player->select();
@@ -344,6 +376,8 @@ int main(int argc, char** argv) {
     }
   });    
   
+  //start the game
+  pragma.reset();
   //main cycle 
   while (!pragma.is_exit()) {
     Uint32 start = SDL_GetTicks();
@@ -365,13 +399,17 @@ int main(int argc, char** argv) {
 	  break;
       }
     }
-    //update
+    //update 
     if (pragma.get_active_player() != ME) 
       players[pragma.get_active_player()].make_move(pragma);
     if (pragma.is_on_restriction(ME, DEAD) ||
 	pragma.is_on_restriction(ME, KILL) || 
-	pragma.is_on_restriction(ME, ROB))
+	pragma.is_on_restriction(ME, ROB)) //under pressure?
       player_state = ON_FIRE;
+    if (pragma.is_on_restriction(A, DEAD) && pragma.is_on_restriction(B, DEAD) &&
+	pragma.is_on_restriction(C, DEAD)) //all dead?
+      player_state = ON_FIRE;
+
     //render
     SDL_SetRenderDrawColor(renderer, 0,0,0,255);
     SDL_RenderClear(renderer);

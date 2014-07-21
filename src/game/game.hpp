@@ -74,6 +74,7 @@ namespace game {
   class Player {
   public:
     Player* make_move(game::Game& game);
+    Player* once_more_with_feelings();
   private:
     bool think_enough(Game&);
     bool remove_restriction(Game& game);
